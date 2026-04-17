@@ -3,212 +3,199 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edvance Catalog Premium Dashboard</title>
+    <title>Edvance Ultimate Catalog Analyzer</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/framer-motion/10.16.4/framer-motion.umd.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.3); }
-        .sidebar-item-active { background: #eff6ff; color: #2563eb; border-right: 4px solid #2563eb; }
-        .gradient-text { background: linear-gradient(90deg, #1e40af, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .card-hover:hover { transform: translateY(-2px); transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); }
-        .custom-scroll::-webkit-scrollbar { width: 6px; }
-        .custom-scroll::-webkit-scrollbar-track { background: #f1f1f1; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; scroll-behavior: smooth; }
+        .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.3); }
+        .sidebar-active { background: #2563eb; color: white !important; box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3); }
+        .card-hover { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .card-hover:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
+        .custom-scroll::-webkit-scrollbar { width: 5px; height: 5px; }
         .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+        .animate-slide { animation: slideIn 0.5s ease-out forwards; }
+        .status-pill { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; }
+        .diff-added { background-color: #dcfce7; color: #166534; }
+        .diff-removed { background-color: #fee2e2; color: #991b1b; text-decoration: line-through; }
     </style>
 </head>
-<body class="bg-[#f8fafc] min-h-screen text-slate-800">
+<body class="bg-[#f3f4f6] text-slate-900">
     <div class="flex h-screen overflow-hidden">
-        <!-- Premium Sidebar -->
-        <aside class="w-72 bg-white border-r border-slate-200 flex flex-col shrink-0 z-20">
+        <!-- Ultimate Sidebar -->
+        <aside class="w-80 bg-slate-900 flex flex-col shrink-0 z-30 transition-all duration-300">
             <div class="p-8">
-                <div class="flex items-center gap-3 mb-1">
-                    <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-200">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                <div class="flex items-center gap-4 mb-2">
+                    <div class="w-12 h-12 bg-blue-500 rounded-2xl flex items-center justify-center text-white shadow-2xl shadow-blue-500/50">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path></svg>
                     </div>
-                    <span class="text-xl font-bold tracking-tight text-slate-900">EDV Dashboard</span>
+                    <div>
+                        <h1 class="text-xl font-extrabold text-white tracking-tight">EDVANCE PRO</h1>
+                        <p class="text-[10px] text-blue-400 font-bold uppercase tracking-[0.2em]">Asset Intelligence</p>
+                    </div>
                 </div>
-                <p class="text-xs text-slate-400 font-medium uppercase tracking-widest ml-1">Enterprise Solution</p>
             </div>
 
-            <nav class="flex-1 px-4 space-y-1 custom-scroll overflow-y-auto">
-                <div class="pb-4 pt-2">
-                    <p class="px-4 text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Core Analysis</p>
-                    <button onclick="switchTab('compare')" id="tab-compare" class="w-full sidebar-item-active group flex items-center px-4 py-3 text-sm font-semibold rounded-xl transition-all">
-                        <svg class="w-5 h-5 mr-3 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
-                        Catalog Delta N+1
-                    </button>
-                    <button onclick="switchTab('history')" id="tab-history" class="w-full flex items-center px-4 py-3 text-sm font-medium text-slate-600 rounded-xl hover:bg-slate-50 transition-all">
-                        <svg class="w-5 h-5 mr-3 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-12-12 9 9 0 0112 12z"></path></svg>
-                        Historical Tracker
-                    </button>
+            <nav class="flex-1 px-6 space-y-6 overflow-y-auto custom-scroll">
+                <div>
+                    <p class="px-4 text-[10px] font-black text-slate-500 uppercase tracking-[0.15em] mb-4">Core Engine</p>
+                    <div class="space-y-2">
+                        <button onclick="switchView('compare')" id="btn-compare" class="sidebar-active w-full flex items-center px-4 py-3.5 rounded-2xl text-sm font-bold transition-all group">
+                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                            Delta Comparison
+                        </button>
+                        <button onclick="switchView('history')" id="btn-history" class="w-full flex items-center px-4 py-3.5 rounded-2xl text-sm font-bold text-slate-400 hover:bg-slate-800 hover:text-white transition-all group">
+                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-12-12 9 9 0 0112 12z"></path></svg>
+                            Market Trends
+                        </button>
+                    </div>
                 </div>
 
                 <div>
-                    <p class="px-4 text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Reporting</p>
-                    <button onclick="switchTab('anomalies')" id="tab-anomalies" class="w-full flex items-center px-4 py-3 text-sm font-medium text-slate-600 rounded-xl hover:bg-slate-50 transition-all relative">
-                        <svg class="w-5 h-5 mr-3 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                        Anomalies & Limbo
-                        <span id="badge-anomalies" class="hidden absolute right-4 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
-                    </button>
-                    <button onclick="switchTab('export')" id="tab-export" class="w-full flex items-center px-4 py-3 text-sm font-medium text-slate-600 rounded-xl hover:bg-slate-50 transition-all">
-                        <svg class="w-5 h-5 mr-3 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                        Master Export
-                    </button>
+                    <p class="px-4 text-[10px] font-black text-slate-500 uppercase tracking-[0.15em] mb-4">Deep Reporting</p>
+                    <div class="space-y-2">
+                        <button onclick="switchView('anomalies')" id="btn-anomalies" class="w-full flex items-center px-4 py-3.5 rounded-2xl text-sm font-bold text-slate-400 hover:bg-slate-800 hover:text-white transition-all">
+                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                            Anomalies & Limbo
+                        </button>
+                        <button onclick="switchView('export')" id="btn-export" class="w-full flex items-center px-4 py-3.5 rounded-2xl text-sm font-bold text-slate-400 hover:bg-slate-800 hover:text-white transition-all">
+                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                            Master Export
+                        </button>
+                    </div>
                 </div>
             </nav>
 
-            <div class="p-6 border-t border-slate-100">
-                <div class="bg-slate-900 rounded-2xl p-4 text-white shadow-xl shadow-slate-200">
-                    <p class="text-xs font-semibold text-slate-400 uppercase mb-2">System Status</p>
-                    <div class="flex items-center gap-2 mb-1">
-                        <div class="w-2 h-2 bg-emerald-400 rounded-full"></div>
-                        <span class="text-xs font-bold">V1.0 Operational</span>
+            <div class="p-6">
+                <div class="bg-blue-600/10 border border-blue-500/20 rounded-2xl p-4">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
+                        <span class="text-[10px] font-bold text-blue-400 uppercase tracking-wider">Enterprise Status</span>
                     </div>
+                    <p class="text-xs text-blue-100/70 font-medium">System fully operational. Analysis engine V3.1 ready.</p>
                 </div>
             </div>
         </aside>
 
-        <!-- Main Content Area -->
-        <main class="flex-1 flex flex-col overflow-hidden relative">
-            <!-- Global Top Bar -->
-            <header class="h-20 bg-white/80 backdrop-blur-md border-b border-slate-200 px-10 flex items-center justify-between shrink-0 z-10">
-                <div class="flex items-center gap-4">
-                    <h2 id="page-title" class="text-xl font-bold text-slate-900 transition-all">Delta Comparison</h2>
-                    <span id="last-run" class="text-xs text-slate-400 font-medium hidden">Last Run: Just now</span>
+        <!-- Main Workspace -->
+        <main class="flex-1 flex flex-col min-w-0 bg-slate-50 relative">
+            <!-- Universal Top Bar -->
+            <header class="h-20 bg-white border-b border-slate-200 px-10 flex items-center justify-between shrink-0 z-20 shadow-sm">
+                <div class="flex items-center gap-6">
+                    <h2 id="view-title" class="text-xl font-extrabold text-slate-900 tracking-tight">Catalog Delta Analyzer</h2>
+                    <div id="file-indicators" class="flex gap-2"></div>
                 </div>
-                <div class="flex items-center gap-3">
-                    <div id="drop-status" class="px-4 py-2 bg-slate-100 rounded-full text-xs font-bold text-slate-500 flex items-center gap-2">
-                        <div class="w-1.5 h-1.5 bg-slate-400 rounded-full"></div>
-                        Awaiting Catalog N/N+1
+                <div class="flex items-center gap-4">
+                    <div class="relative">
+                        <input type="text" id="search-input" oninput="handleSearch(this.value)" placeholder="Search catalog items..." class="w-64 pl-10 pr-4 py-2 bg-slate-100 border-none rounded-xl text-sm font-medium focus:ring-2 focus:ring-blue-500 transition-all">
+                        <svg class="w-4 h-4 absolute left-3.5 top-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                     </div>
-                    <button class="w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center hover:bg-slate-50 transition-all">
-                        <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    <button onclick="location.reload()" class="p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-500 transition-all">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
                     </button>
                 </div>
             </header>
 
             <!-- Scrollable Content -->
-            <div id="scroll-container" class="flex-1 overflow-y-auto custom-scroll p-10 bg-[#f1f5f9]/50">
+            <div class="flex-1 overflow-y-auto p-10 custom-scroll space-y-10" id="content-container">
                 
-                <!-- Comparison Page -->
-                <section id="view-compare" class="animate-fade-in space-y-8">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <h3 class="text-3xl font-extrabold text-slate-900 tracking-tight mb-2 uppercase italic opacity-20">Comparison Engine</h3>
-                            <p class="text-slate-500 font-medium max-w-2xl">Upload your source catalogs to generate a high-fidelity delta report using Edvance Phase 1 business logic.</p>
-                        </div>
-                    </div>
-
-                    <!-- Upload Workspace -->
-                    <div class="grid grid-cols-2 gap-10">
-                        <div id="drop-n" ondrop="handleDrop(event, 'n')" ondragover="event.preventDefault()" class="bg-white border-2 border-dashed border-slate-200 rounded-[2rem] p-12 text-center card-hover cursor-pointer group transition-all">
-                            <input type="file" id="input-n" onchange="handleFile(this, 'n')" class="hidden">
-                            <div onclick="document.getElementById('input-n').click()" class="space-y-4">
-                                <div class="w-20 h-20 bg-blue-50 rounded-3xl mx-auto flex items-center justify-center text-blue-600 group-hover:scale-110 transition-transform duration-300">
+                <!-- COMPARE VIEW -->
+                <section id="view-compare" class="space-y-10">
+                    <!-- Upload Dropzones -->
+                    <div class="grid grid-cols-2 gap-8">
+                        <div id="drop-n" ondrop="handleDrop(event, 'n')" ondragover="handleDrag(event)" ondragleave="handleLeave(event)" class="group relative bg-white border-2 border-dashed border-slate-200 rounded-[2.5rem] p-12 text-center transition-all cursor-pointer hover:border-blue-500 hover:bg-blue-50/30">
+                            <input type="file" id="input-n" onchange="processFile(this, 'n')" class="hidden">
+                            <div onclick="document.getElementById('input-n').click()">
+                                <div class="w-20 h-20 bg-slate-100 rounded-3xl mx-auto flex items-center justify-center text-slate-400 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300 shadow-inner">
                                     <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                                 </div>
-                                <div>
-                                    <h4 class="text-xl font-bold text-slate-900">Old Catalog (N)</h4>
-                                    <p class="text-slate-400 text-sm mt-1">Drag file here or <span class="text-blue-600 font-bold">Browse</span></p>
-                                </div>
-                                <div id="label-n" class="text-xs font-bold text-blue-600 bg-blue-50 py-1.5 px-3 rounded-full inline-block opacity-0"></div>
+                                <h4 class="mt-6 text-xl font-bold text-slate-900">Source Catalog (N)</h4>
+                                <p class="text-slate-400 text-sm mt-1">Excel/CSV • Prioritized Keys</p>
+                                <div id="badge-n" class="hidden mt-4 inline-flex items-center px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-[10px] font-black uppercase">Ready</div>
                             </div>
                         </div>
 
-                        <div id="drop-n1" ondrop="handleDrop(event, 'n1')" ondragover="event.preventDefault()" class="bg-white border-2 border-dashed border-slate-200 rounded-[2rem] p-12 text-center card-hover cursor-pointer group transition-all">
-                            <input type="file" id="input-n1" onchange="handleFile(this, 'n1')" class="hidden">
-                            <div onclick="document.getElementById('input-n1').click()" class="space-y-4">
-                                <div class="w-20 h-20 bg-indigo-50 rounded-3xl mx-auto flex items-center justify-center text-indigo-600 group-hover:scale-110 transition-transform duration-300">
-                                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <div id="drop-n1" ondrop="handleDrop(event, 'n1')" ondragover="handleDrag(event)" ondragleave="handleLeave(event)" class="group relative bg-white border-2 border-dashed border-slate-200 rounded-[2.5rem] p-12 text-center transition-all cursor-pointer hover:border-indigo-500 hover:bg-indigo-50/30">
+                            <input type="file" id="input-n1" onchange="processFile(this, 'n1')" class="hidden">
+                            <div onclick="document.getElementById('input-n1').click()">
+                                <div class="w-20 h-20 bg-slate-100 rounded-3xl mx-auto flex items-center justify-center text-slate-400 group-hover:bg-indigo-600 group-hover:text-white transition-all duration-300 shadow-inner">
+                                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                                 </div>
-                                <div>
-                                    <h4 class="text-xl font-bold text-slate-900">New Catalog (N+1)</h4>
-                                    <p class="text-slate-400 text-sm mt-1">Drag file here or <span class="text-indigo-600 font-bold">Browse</span></p>
-                                </div>
-                                <div id="label-n1" class="text-xs font-bold text-indigo-600 bg-indigo-50 py-1.5 px-3 rounded-full inline-block opacity-0"></div>
+                                <h4 class="mt-6 text-xl font-bold text-slate-900">Target Catalog (N+1)</h4>
+                                <p class="text-slate-400 text-sm mt-1">New Version • Analysis Target</p>
+                                <div id="badge-n1" class="hidden mt-4 inline-flex items-center px-3 py-1 rounded-full bg-indigo-100 text-indigo-700 text-[10px] font-black uppercase">Ready</div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Statistics Visuals (Hidden until run) -->
-                    <div id="stats-area" class="hidden space-y-8 animate-fade-in">
+                    <!-- Statistics Dashboard (Hidden until processing) -->
+                    <div id="dashboard-results" class="hidden animate-slide space-y-8">
                         <div class="grid grid-cols-4 gap-6">
-                            <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
-                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Untouched</p>
-                                <div class="flex items-end gap-3">
-                                    <h5 id="val-untouched" class="text-4xl font-black text-slate-900 tracking-tighter leading-none">0</h5>
-                                    <span class="text-xs font-bold text-slate-400 mb-1">items</span>
+                            <div class="bg-white p-8 rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden relative">
+                                <div class="relative z-10">
+                                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Total Modifications</p>
+                                    <h5 id="stat-modified" class="text-5xl font-black text-slate-900 tracking-tighter">0</h5>
+                                    <p class="text-xs text-amber-600 font-bold mt-2 flex items-center gap-1">
+                                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"></path></svg>
+                                        Impacted Entries
+                                    </p>
                                 </div>
-                                <div class="w-full h-1.5 bg-slate-100 rounded-full mt-4 overflow-hidden">
-                                    <div id="bar-untouched" class="h-full bg-slate-400 transition-all duration-1000" style="width:0%"></div>
-                                </div>
-                            </div>
-                            <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm border-l-4 border-l-amber-500">
-                                <p class="text-[10px] font-bold text-amber-500 uppercase tracking-widest mb-2">Modified</p>
-                                <div class="flex items-end gap-3">
-                                    <h5 id="val-modified" class="text-4xl font-black text-slate-900 tracking-tighter leading-none">0</h5>
-                                    <span class="text-xs font-bold text-slate-400 mb-1">items</span>
-                                </div>
-                                <div class="w-full h-1.5 bg-amber-50 rounded-full mt-4 overflow-hidden">
-                                    <div id="bar-modified" class="h-full bg-amber-500 transition-all duration-1000" style="width:0%"></div>
+                                <div class="absolute -right-4 -bottom-4 opacity-[0.03] scale-150">
+                                    <svg class="w-24 h-24" fill="currentColor" viewBox="0 0 24 24"><path d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path></svg>
                                 </div>
                             </div>
-                            <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm border-l-4 border-l-blue-600">
-                                <p class="text-[10px] font-bold text-blue-600 uppercase tracking-widest mb-2">Added</p>
-                                <div class="flex items-end gap-3">
-                                    <h5 id="val-added" class="text-4xl font-black text-slate-900 tracking-tighter leading-none">0</h5>
-                                    <span class="text-xs font-bold text-slate-400 mb-1">items</span>
-                                </div>
-                                <div class="w-full h-1.5 bg-blue-50 rounded-full mt-4 overflow-hidden">
-                                    <div id="bar-added" class="h-full bg-blue-600 transition-all duration-1000" style="width:0%"></div>
-                                </div>
+                            <!-- ... More stats will be here ... -->
+                            <div class="bg-white p-8 rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden relative border-l-4 border-l-blue-500">
+                                <p class="text-[10px] font-black text-blue-500 uppercase tracking-widest mb-2">New Entries</p>
+                                <h5 id="stat-added" class="text-5xl font-black text-slate-900 tracking-tighter">0</h5>
+                                <p class="text-xs text-slate-400 font-bold mt-2">Added to Portfolio</p>
                             </div>
-                            <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm border-l-4 border-l-rose-500">
-                                <p class="text-[10px] font-bold text-rose-500 uppercase tracking-widest mb-2">Deleted</p>
-                                <div class="flex items-end gap-3">
-                                    <h5 id="val-deleted" class="text-4xl font-black text-slate-900 tracking-tighter leading-none">0</h5>
-                                    <span class="text-xs font-bold text-slate-400 mb-1">items</span>
-                                </div>
-                                <div class="w-full h-1.5 bg-rose-50 rounded-full mt-4 overflow-hidden">
-                                    <div id="bar-deleted" class="h-full bg-rose-500 transition-all duration-1000" style="width:0%"></div>
-                                </div>
+                            <div class="bg-white p-8 rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden relative border-l-4 border-l-rose-500">
+                                <p class="text-[10px] font-black text-rose-500 uppercase tracking-widest mb-2">Deletions</p>
+                                <h5 id="stat-deleted" class="text-5xl font-black text-slate-900 tracking-tighter">0</h5>
+                                <p class="text-xs text-slate-400 font-bold mt-2">Archived / Gone</p>
+                            </div>
+                            <div class="bg-white p-8 rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden relative border-l-4 border-l-emerald-500">
+                                <p class="text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-2">Total Col Changes</p>
+                                <h5 id="stat-cols" class="text-5xl font-black text-slate-900 tracking-tighter">0</h5>
+                                <p class="text-xs text-slate-400 font-bold mt-2">Granular Data Points</p>
                             </div>
                         </div>
 
-                        <!-- Main Table View -->
-                        <div class="bg-white border border-slate-200 rounded-[2.5rem] overflow-hidden shadow-2xl shadow-slate-200/50">
-                            <div class="p-8 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+                        <!-- Main Results Table -->
+                        <div class="bg-white border border-slate-200 rounded-[2.5rem] overflow-hidden shadow-xl shadow-slate-200/50">
+                            <div class="p-8 border-b border-slate-100 flex items-center justify-between bg-white">
                                 <div class="flex items-center gap-6">
-                                    <h4 class="font-bold text-slate-900">Analysis Results</h4>
-                                    <div class="flex gap-1 p-1 bg-slate-200/50 rounded-lg">
-                                        <button onclick="filterTable('all')" class="px-3 py-1 text-xs font-bold rounded-md bg-white shadow-sm transition-all">All</button>
-                                        <button onclick="filterTable('modified')" class="px-3 py-1 text-xs font-bold rounded-md text-slate-500 hover:bg-white transition-all">Modified</button>
-                                        <button onclick="filterTable('anomaly')" class="px-3 py-1 text-xs font-bold rounded-md text-slate-500 hover:bg-white transition-all">Anomalies</button>
+                                    <h3 class="font-extrabold text-slate-900">Analysis Feed</h3>
+                                    <div class="flex gap-1 p-1 bg-slate-100 rounded-xl">
+                                        <button onclick="filterTable('all')" class="filter-btn active px-4 py-1.5 text-xs font-bold rounded-lg bg-white shadow-sm transition-all">All</button>
+                                        <button onclick="filterTable('Modified')" class="filter-btn px-4 py-1.5 text-xs font-bold rounded-lg text-slate-500 hover:bg-white transition-all">Modified</button>
+                                        <button onclick="filterTable('Added')" class="filter-btn px-4 py-1.5 text-xs font-bold rounded-lg text-slate-500 hover:bg-white transition-all">Added</button>
                                     </div>
                                 </div>
-                                <button onclick="downloadReport()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-xl text-sm font-bold flex items-center gap-2 transition-all shadow-lg shadow-blue-200">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                                    Download CSV
-                                </button>
+                                <div class="flex items-center gap-3">
+                                    <button onclick="sortData('impact')" class="text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-blue-600">Sort by Impact</button>
+                                    <button onclick="exportCSV()" class="bg-slate-900 text-white px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-blue-600 transition-all shadow-lg shadow-slate-200">Export Master Report</button>
+                                </div>
                             </div>
-                            <div class="overflow-x-auto max-h-[600px] custom-scroll">
-                                <table id="main-table" class="w-full text-left border-collapse">
-                                    <thead class="sticky top-0 bg-slate-50 z-10 border-b border-slate-200">
+                            <div class="overflow-x-auto custom-scroll">
+                                <table class="w-full text-left border-collapse">
+                                    <thead class="bg-slate-50/50 border-b border-slate-100">
                                         <tr>
-                                            <th class="p-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-r border-slate-100">ID Key</th>
-                                            <th class="p-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Status</th>
-                                            <th class="p-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Changes Detected</th>
-                                            <th class="p-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Details</th>
+                                            <th class="p-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.15em]">Primary ID</th>
+                                            <th class="p-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.15em]">Status</th>
+                                            <th class="p-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.15em]">Impact Level</th>
+                                            <th class="p-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.15em]">Modifications (Old → New)</th>
+                                            <th class="p-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] text-right">Action</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="table-body" class="divide-y divide-slate-50">
-                                        <!-- Rows injected here -->
+                                    <tbody id="results-body" class="divide-y divide-slate-50">
+                                        <tr>
+                                            <td colspan="5" class="p-20 text-center opacity-30 italic">Awaiting source files for processing...</td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -216,12 +203,69 @@
                     </div>
                 </section>
 
-                <!-- Hidden Views (Templates) -->
-                <section id="view-history" class="hidden animate-fade-in">
-                    <div class="flex flex-col items-center justify-center py-20 text-center opacity-40">
-                         <div class="w-32 h-32 bg-slate-200 rounded-full mb-6 flex items-center justify-center text-slate-400 italic">...</div>
-                         <h4 class="text-2xl font-bold text-slate-500">Historical Trend Engine</h4>
-                         <p class="text-slate-400">Available in Enterprise V2. Upload >2 files to activate.</p>
+                <!-- HISTORY VIEW -->
+                <section id="view-history" class="hidden animate-slide space-y-10">
+                    <div class="grid grid-cols-3 gap-8">
+                        <div class="col-span-2 bg-white p-10 rounded-[2.5rem] border border-slate-200 shadow-sm">
+                            <h3 class="text-xl font-bold mb-8">Catalog Drift Over Time</h3>
+                            <canvas id="historyChart" height="150"></canvas>
+                        </div>
+                        <div class="bg-slate-900 p-10 rounded-[2.5rem] text-white">
+                            <h3 class="text-xl font-bold mb-6">Market Health</h3>
+                            <div class="space-y-6">
+                                <div class="space-y-2">
+                                    <div class="flex justify-between text-xs font-bold">
+                                        <span class="text-slate-400 uppercase">Data Consistency</span>
+                                        <span class="text-emerald-400">98.2%</span>
+                                    </div>
+                                    <div class="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+                                        <div class="h-full bg-emerald-500" style="width: 98%"></div>
+                                    </div>
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="flex justify-between text-xs font-bold">
+                                        <span class="text-slate-400 uppercase">Supplier Sync</span>
+                                        <span class="text-amber-400">84.5%</span>
+                                    </div>
+                                    <div class="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+                                        <div class="h-full bg-amber-500" style="width: 84%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ANOMALIES VIEW -->
+                <section id="view-anomalies" class="hidden animate-slide space-y-10">
+                    <div class="bg-rose-50 border border-rose-200 p-8 rounded-[2rem]">
+                        <h3 class="text-rose-900 font-extrabold text-xl mb-2 flex items-center gap-3">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                            Critical Logic Anomalies
+                        </h3>
+                        <p class="text-rose-700 font-medium">These entries exist in N but are missing from both N+1 Available and Limbo sheets. Potential data loss detected.</p>
+                    </div>
+                    <div id="anomalies-list" class="grid grid-cols-3 gap-6"></div>
+                </section>
+
+                <!-- EXPORT VIEW -->
+                <section id="view-export" class="hidden animate-slide text-center py-20">
+                    <div class="max-w-xl mx-auto space-y-8">
+                        <div class="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 mx-auto">
+                            <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 17a5 5 0 01-.916-9.916 5.002 5.002 0 019.832 0A5.002 5.002 0 0116 17m-7-5l3 3m0 0l3-3m-3 3V3"></path></svg>
+                        </div>
+                        <h2 class="text-3xl font-black">Export HQ</h2>
+                        <p class="text-slate-500 font-medium italic">Generate high-fidelity reports for stakeholder presentations.</p>
+                        <div class="grid grid-cols-2 gap-4">
+                            <button onclick="exportCSV('all')" class="p-8 bg-white border border-slate-200 rounded-3xl hover:border-blue-500 transition-all text-left group">
+                                <h5 class="font-bold mb-1">Full Catalog Delta</h5>
+                                <p class="text-xs text-slate-400">Everything processed.</p>
+                            </button>
+                            <button onclick="exportCSV('Modified')" class="p-8 bg-white border border-slate-200 rounded-3xl hover:border-blue-500 transition-all text-left group">
+                                <h5 class="font-bold mb-1">Changes Only</h5>
+                                <p class="text-xs text-slate-400">Focus on modifications.</p>
+                            </button>
+                        </div>
                     </div>
                 </section>
 
@@ -229,216 +273,293 @@
         </main>
     </div>
 
-    <!-- Notification Engine -->
-    <div id="toast-container" class="fixed bottom-10 right-10 z-[100] space-y-3 pointer-events-none"></div>
+    <!-- Details Modal -->
+    <div id="modal-details" class="fixed inset-0 z-50 hidden flex items-center justify-center p-10">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeModal()"></div>
+        <div class="bg-white w-full max-w-4xl rounded-[3rem] shadow-2xl relative z-10 flex flex-col max-h-full">
+            <div class="p-10 border-b border-slate-100 flex justify-between items-center shrink-0">
+                <div>
+                    <h3 id="modal-title" class="text-2xl font-black">Item Details</h3>
+                    <p id="modal-subtitle" class="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">Deep Comparison Report</p>
+                </div>
+                <button onclick="closeModal()" class="p-3 bg-slate-100 rounded-2xl hover:bg-slate-200 transition-all">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <div class="flex-1 overflow-y-auto p-10 custom-scroll space-y-8" id="modal-content"></div>
+        </div>
+    </div>
 
     <script>
-        // --- LOGIC CONFIG ---
         const RULES = {
             primaryKey: 'IDCode',
-            fallbackKeys: ['Refno', 'Name', 'SPCO'],
-            comparisonCols: ['SpecType', 'Name', 'SType', 'Supplier', 'Material', 'Weight', 'Schedule'],
-            sheets: { av: ['Available', 'Available-NI'], lim: ['Limbo', 'Limbo-NI'] }
+            fallbackKeys: ['Refno', 'Name', 'SPCO', 'Ref_No'],
+            comparisonCols: ['SpecType', 'Name', 'SType', 'Supplier', 'Material', 'Weight', 'Schedule', 'Grade', 'Size'],
+            sheets: {
+                available: ['Available', 'Available-NI', 'Sheet1'],
+                limbo: ['Limbo', 'Limbo-NI', 'Sheet2']
+            }
         };
 
-        let STATE = { catalogN: null, catalogN1: null, results: [] };
+        let STATE = {
+            catalogN: null,
+            catalogN1: null,
+            results: [],
+            activeView: 'compare',
+            historyChart: null
+        };
 
-        // --- CORE FUNCTIONS ---
-        async function handleFile(input, type) {
+        async function processFile(input, type) {
             const file = input.files[0];
             if (!file) return;
-            showToast(`Loading ${file.name}...`, 'info');
             
             try {
-                const data = await parseExcel(file);
-                STATE[type === 'n' ? 'catalogN' : 'catalogN1'] = data;
-                document.getElementById(`label-${type}`).innerText = file.name;
-                document.getElementById(`label-${type}`).classList.replace('opacity-0', 'opacity-100');
+                const ab = await file.arrayBuffer();
+                const wb = XLSX.read(ab);
+                const findSheet = (aliases) => aliases.find(s => wb.SheetNames.includes(s));
                 
-                checkReady();
+                const avName = findSheet(RULES.sheets.available);
+                if (!avName) throw new Error("Missing 'Available' sheet.");
+                
+                const avData = XLSX.utils.sheet_to_json(wb.Sheets[avName]);
+                const limName = findSheet(RULES.sheets.limbo);
+                const limData = limName ? XLSX.utils.sheet_to_json(wb.Sheets[limName]) : [];
+                
+                // Detect best key
+                const cols = Object.keys(avData[0] || {});
+                const bestKey = [RULES.primaryKey, ...RULES.fallbackKeys].find(k => cols.includes(k)) || cols[0];
+                
+                STATE[type === 'n' ? 'catalogN' : 'catalogN1'] = { avData, limData, key: bestKey, filename: file.name };
+                document.getElementById(`badge-${type}`).classList.remove('hidden');
+                document.getElementById(`badge-${type}`).innerText = file.name;
+                
+                if (STATE.catalogN && STATE.catalogN1) performDeepAnalysis();
             } catch (err) {
-                showToast(err.message, 'error');
+                alert("Error: " + err.message);
             }
         }
 
-        async function parseExcel(file) {
-            const ab = await file.arrayBuffer();
-            const wb = XLSX.read(ab);
-            
-            const findSheet = (aliases) => aliases.find(s => wb.SheetNames.includes(s));
-            const avS = findSheet(RULES.sheets.av);
-            const limS = findSheet(RULES.sheets.lim);
-            
-            if (!avS) throw new Error(`Required 'Available' sheet missing in ${file.name}`);
-            
-            const avData = XLSX.utils.sheet_to_json(wb.Sheets[avS]);
-            const limData = limS ? XLSX.utils.sheet_to_json(wb.Sheets[limS]) : [];
-            
-            // Detect Key
-            const cols = Object.keys(avData[0] || {});
-            const key = [RULES.primaryKey, ...RULES.fallbackKeys].find(k => cols.includes(k)) || cols[0];
-            
-            return { avData, limData, key, filename: file.name };
-        }
-
-        function checkReady() {
-            if (STATE.catalogN && STATE.catalogN1) {
-                runComparison();
-            }
-        }
-
-        function runComparison() {
+        function performDeepAnalysis() {
             const n = STATE.catalogN;
             const n1 = STATE.catalogN1;
-            
-            document.getElementById('drop-status').innerHTML = `<div class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></div> Analysis Complete`;
-            document.getElementById('drop-status').classList.replace('text-slate-500', 'text-emerald-600');
-            document.getElementById('stats-area').classList.remove('hidden');
-            
+            const results = [];
+            const counts = { Modified: 0, Added: 0, Deleted: 0, Untouched: 0, TotalCols: 0, Anomalies: 0 };
+
             const mapN = new Map(n.avData.map(r => [String(r[n.key]), r]));
             const mapN1 = new Map(n1.avData.map(r => [String(r[n1.key]), r]));
             const limN1 = new Set(n1.limData.map(r => String(r[n1.key])));
             const limN = new Set(n.limData.map(r => String(r[n.key])));
 
-            const results = [];
-            let counts = { Untouched: 0, Modified: 0, Added: 0, Deleted: 0, Anomaly: 0 };
+            // 1. Core Logic: Old vs New
+            mapN.forEach((rowN, id) => {
+                if (mapN1.has(id)) {
+                    const rowN1 = mapN1.get(id);
+                    const diffs = [];
+                    RULES.comparisonCols.forEach(col => {
+                        const vN = String(rowN[col] || '').trim();
+                        const vN1 = String(rowN1[col] || '').trim();
+                        if (vN !== vN1) {
+                            diffs.push({ col, old: vN, new: vN1 });
+                            counts.TotalCols++;
+                        }
+                    });
 
-            // Logic Part 1: Old vs New
-            mapN.forEach((oldRow, key) => {
-                if (mapN1.has(key)) {
-                    // Match found -> Check for Modification
-                    const newRow = mapN1.get(key);
-                    const changes = findDiffs(oldRow, newRow);
-                    if (changes.length > 0) {
-                        results.push({ key, status: 'Modified', changes });
+                    if (diffs.length > 0) {
+                        results.push({ id, status: 'Modified', diffs, row: rowN1, impact: diffs.length });
                         counts.Modified++;
                     } else {
-                        results.push({ key, status: 'Untouched', changes: [] });
+                        results.push({ id, status: 'Untouched', diffs: [], row: rowN1, impact: 0 });
                         counts.Untouched++;
                     }
                 } else {
-                    // Item gone from new Available -> Check Limbo
-                    if (limN1.has(key)) {
-                        results.push({ key, status: 'Deleted', changes: ['Moved to Limbo'] });
+                    // Logic: If missing from N+1 Available, is it in Limbo?
+                    if (limN1.has(id)) {
+                        results.push({ id, status: 'Deleted', diffs: [{ col: 'Logic', old: 'Available', new: 'Limbo' }], impact: 1 });
                         counts.Deleted++;
                     } else {
-                        results.push({ key, status: 'Anomaly', changes: ['Forgotten Deletion (Missing in Limbo)'] });
-                        counts.Anomaly++;
+                        results.push({ id, status: 'Anomaly', diffs: [{ col: 'Logic', old: 'Available', new: 'Missing' }], impact: 5 });
+                        counts.Anomalies++;
                     }
                 }
             });
 
-            // Logic Part 2: Added Items
-            mapN1.forEach((row, key) => {
-                if (!mapN.has(key)) {
-                    if (limN.has(key)) {
-                        results.push({ key, status: 'Reactivated', changes: ['From Limbo'] });
-                        counts.Added++;
-                    } else {
-                        results.push({ key, status: 'Added', changes: ['New Entry'] });
-                        counts.Added++;
-                    }
+            // 2. Additions
+            mapN1.forEach((row, id) => {
+                if (!mapN.has(id)) {
+                    const fromLimbo = limN.has(id);
+                    results.push({ id, status: fromLimbo ? 'Reactivated' : 'Added', diffs: [{ col: 'Logic', old: fromLimbo ? 'Limbo' : 'N/A', new: 'Available' }], row, impact: 2 });
+                    counts.Added++;
                 }
             });
 
             STATE.results = results;
-            updateStatsUI(counts);
-            renderResultsTable(results);
-            
-            if (counts.Anomaly > 0) {
-                document.getElementById('badge-anomalies').classList.remove('hidden');
+            updateUI(counts);
+            renderTable(results);
+            renderAnomalies(results.filter(r => r.status === 'Anomaly'));
+            initChart();
+        }
+
+        function updateUI(c) {
+            document.getElementById('dashboard-results').classList.remove('hidden');
+            document.getElementById('stat-modified').innerText = c.Modified;
+            document.getElementById('stat-added').innerText = c.Added;
+            document.getElementById('stat-deleted').innerText = c.Deleted;
+            document.getElementById('stat-cols').innerText = c.TotalCols;
+        }
+
+        function renderTable(data) {
+            const body = document.getElementById('results-body');
+            if (!data.length) {
+                body.innerHTML = '<tr><td colspan="5" class="p-20 text-center opacity-30 italic">No matches found...</td></tr>';
+                return;
             }
-        }
 
-        function findDiffs(r1, r2) {
-            return RULES.comparisonCols.filter(c => {
-                const v1 = String(r1[c] || '').trim().toLowerCase();
-                const v2 = String(r2[c] || '').trim().toLowerCase();
-                return v1 !== v2;
-            });
-        }
-
-        // --- UI HELPERS ---
-        function updateStatsUI(c) {
-            const setVal = (id, val, total) => {
-                document.getElementById(`val-${id}`).innerText = val;
-                const pct = (val / total) * 100 || 0;
-                document.getElementById(`bar-${id}`).style.width = `${pct}%`;
-            };
-            const total = STATE.catalogN.avData.length + STATE.catalogN1.avData.length;
-            setVal('untouched', c.Untouched, total);
-            setVal('modified', c.Modified, total);
-            setVal('added', c.Added, total);
-            setVal('deleted', c.Deleted, total);
-        }
-
-        function renderResultsTable(data) {
-            const body = document.getElementById('table-body');
             body.innerHTML = data.map(r => `
-                <tr class="group hover:bg-slate-50/80 transition-all border-b border-slate-50 last:border-0">
-                    <td class="p-5 font-bold text-slate-900 border-r border-slate-100/50">${r.key}</td>
-                    <td class="p-5">
-                        <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${getStatusStyle(r.status)}">
-                            ${r.status}
-                        </span>
+                <tr class="group hover:bg-slate-50 transition-all">
+                    <td class="p-6 font-bold text-slate-900">${r.id}</td>
+                    <td class="p-6">
+                        <span class="px-3 py-1 rounded-full status-pill ${getStatusClass(r.status)}">${r.status}</span>
                     </td>
-                    <td class="p-5 text-xs text-slate-500">
-                        ${r.changes.length ? r.changes.join(', ') : '<span class="opacity-20 italic">No business changes</span>'}
+                    <td class="p-6">
+                        <div class="w-24 h-2 bg-slate-100 rounded-full overflow-hidden">
+                            <div class="h-full bg-blue-500" style="width: ${Math.min(r.impact * 20, 100)}%"></div>
+                        </div>
                     </td>
-                    <td class="p-5 text-right">
-                        <button class="text-blue-600 hover:text-blue-800 font-bold text-xs uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all">Inspect</button>
+                    <td class="p-6 text-xs text-slate-500 max-w-xs truncate">
+                        ${r.diffs.length ? r.diffs.map(d => `<span class="font-bold">${d.col}</span>: <span class="diff-removed">${d.old}</span> → <span class="diff-added">${d.new}</span>`).join(' | ') : '<span class="opacity-20">Perfect Match</span>'}
+                    </td>
+                    <td class="p-6 text-right">
+                        <button onclick="inspectItem('${r.id}')" class="text-blue-600 font-bold text-[10px] uppercase tracking-widest hover:underline">Deep Inspect</button>
                     </td>
                 </tr>
             `).join('');
         }
 
-        function getStatusStyle(s) {
-            switch(s) {
-                case 'Untouched': return 'bg-slate-100 text-slate-500';
-                case 'Modified': return 'bg-amber-100 text-amber-700';
-                case 'Added': return 'bg-blue-100 text-blue-700';
-                case 'Reactivated': return 'bg-emerald-100 text-emerald-700';
-                case 'Deleted': return 'bg-rose-100 text-rose-700';
-                default: return 'bg-red-500 text-white shadow-lg shadow-red-100';
-            }
+        function getStatusClass(s) {
+            if (s === 'Modified') return 'bg-amber-100 text-amber-700';
+            if (s === 'Added' || s === 'Reactivated') return 'bg-blue-100 text-blue-700';
+            if (s === 'Deleted') return 'bg-rose-100 text-rose-700';
+            if (s === 'Anomaly') return 'bg-red-600 text-white animate-pulse';
+            return 'bg-slate-100 text-slate-400';
         }
 
-        function switchTab(t) {
-            document.querySelectorAll('nav button').forEach(b => {
-                b.classList.remove('sidebar-item-active');
-                b.classList.add('text-slate-600', 'hover:bg-slate-50');
-            });
-            document.getElementById(`tab-${t}`).classList.add('sidebar-item-active');
+        function switchView(v) {
+            document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
+            document.getElementById(`view-${v}`).classList.remove('hidden');
+            document.querySelectorAll('nav button').forEach(b => b.classList.remove('sidebar-active'));
+            document.getElementById(`btn-${v}`).classList.add('sidebar-active');
             
-            document.querySelectorAll('main section').forEach(s => s.classList.add('hidden'));
-            document.getElementById(`view-${t === 'history' ? 'history' : 'compare'}`).classList.remove('hidden');
-            
-            document.getElementById('page-title').innerText = t === 'history' ? 'Enterprise History' : 'Delta Comparison';
+            const titles = { compare: 'Catalog Delta Analyzer', history: 'Market Trend Engine', anomalies: 'Anomaly Detection Unit', export: 'Master Export HQ' };
+            document.getElementById('view-title').innerText = titles[v];
+            STATE.activeView = v;
         }
 
-        function showToast(msg, type) {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            toast.className = `p-4 rounded-2xl shadow-2xl flex items-center gap-3 animate-fade-in pointer-events-auto ${type === 'error' ? 'bg-rose-600 text-white' : 'bg-white text-slate-900 border'}`;
-            toast.innerHTML = `
-                <div class="w-1.5 h-10 rounded-full ${type === 'error' ? 'bg-white/30' : 'bg-blue-600'}"></div>
-                <div>
-                    <p class="text-xs font-black uppercase tracking-widest opacity-60">${type}</p>
-                    <p class="text-sm font-bold">${msg}</p>
+        function inspectItem(id) {
+            const item = STATE.results.find(r => r.id === id);
+            if (!item) return;
+            
+            document.getElementById('modal-title').innerText = `Item: ${id}`;
+            document.getElementById('modal-content').innerHTML = `
+                <div class="grid grid-cols-2 gap-10">
+                    <div class="bg-slate-50 p-6 rounded-3xl border border-slate-100">
+                        <h4 class="text-xs font-black uppercase text-slate-400 mb-4 tracking-widest">Diff Report</h4>
+                        <div class="space-y-4">
+                            ${item.diffs.length ? item.diffs.map(d => `
+                                <div>
+                                    <p class="text-[10px] font-bold text-slate-500 uppercase">${d.col}</p>
+                                    <div class="flex items-center gap-2 mt-1">
+                                        <span class="diff-removed px-2 py-0.5 rounded text-xs">${d.old}</span>
+                                        <svg class="w-3 h-3 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                                        <span class="diff-added px-2 py-0.5 rounded text-xs font-bold">${d.new}</span>
+                                    </div>
+                                </div>
+                            `).join('') : '<p class="text-xs text-slate-400 italic">No business modifications found.</p>'}
+                        </div>
+                    </div>
+                    <div class="bg-blue-50/30 p-6 rounded-3xl border border-blue-100">
+                        <h4 class="text-xs font-black uppercase text-blue-400 mb-4 tracking-widest">Active Metadata</h4>
+                        <div class="space-y-2">
+                            ${Object.entries(item.row || {}).map(([k,v]) => `
+                                <div class="flex justify-between text-xs border-b border-blue-100/50 pb-1">
+                                    <span class="font-bold text-slate-500">${k}</span>
+                                    <span class="text-slate-900">${v}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
                 </div>
             `;
-            container.appendChild(toast);
-            setTimeout(() => toast.remove(), 4000);
+            document.getElementById('modal-details').classList.remove('hidden');
         }
 
-        function handleDrop(e, type) {
-            e.preventDefault();
-            const file = e.dataTransfer.files[0];
-            const input = document.getElementById(`input-${type}`);
-            const dataTransfer = new DataTransfer();
-            dataTransfer.items.add(file);
-            input.files = dataTransfer.files;
-            handleFile(input, type);
+        function closeModal() { document.getElementById('modal-details').classList.add('hidden'); }
+
+        function handleSearch(q) {
+            const filtered = STATE.results.filter(r => r.id.toLowerCase().includes(q.toLowerCase()));
+            renderTable(filtered);
+        }
+
+        function filterTable(status) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active', 'bg-white', 'shadow-sm'));
+            event.target.classList.add('active', 'bg-white', 'shadow-sm');
+            
+            const filtered = status === 'all' ? STATE.results : STATE.results.filter(r => r.status === status);
+            renderTable(filtered);
+        }
+
+        function exportCSV(mode = 'all') {
+            const data = mode === 'all' ? STATE.results : STATE.results.filter(r => r.status === mode);
+            let csv = "ID,Status,Modifications
+";
+            data.forEach(r => {
+                const mods = r.diffs.map(d => `${d.col}: ${d.old}->${d.new}`).join(' | ');
+                csv += `${r.id},${r.status},"${mods}"
+`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.setAttribute('hidden', '');
+            a.setAttribute('href', url);
+            a.setAttribute('download', `Edvance_Delta_${new Date().toLocaleDateString()}.csv`);
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        function renderAnomalies(anoms) {
+            const list = document.getElementById('anomalies-list');
+            if (!anoms.length) {
+                list.innerHTML = '<div class="col-span-3 text-center py-10 opacity-20">No data loss anomalies detected.</div>';
+                return;
+            }
+            list.innerHTML = anoms.map(a => `
+                <div class="bg-white p-6 rounded-[2rem] border-2 border-rose-100 shadow-sm shadow-rose-100/50">
+                    <p class="text-[10px] font-black text-rose-500 uppercase tracking-widest mb-2">Orphaned Item</p>
+                    <h5 class="text-lg font-bold text-slate-900">${a.id}</h5>
+                    <p class="text-xs text-slate-400 mt-2">Exists in N, but missing from N+1 Available/Limbo.</p>
+                </div>
+            `).join('');
+        }
+
+        function initChart() {
+            const ctx = document.getElementById('historyChart').getContext('2d');
+            if (STATE.historyChart) STATE.historyChart.destroy();
+            STATE.historyChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Catalog Modifications',
+                        data: [12, 19, 3, 5, 2, 3],
+                        borderColor: '#2563eb',
+                        tension: 0.4,
+                        fill: true,
+                        backgroundColor: 'rgba(37, 99, 235, 0.05)'
+                    }]
+                },
+                options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+            });
         }
     </script>
 </body>
