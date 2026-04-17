@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catalog Management Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        .drop-zone { border: 2px dashed #cbd5e1; transition: all 0.3s; }
+        .drop-zone:hover { border-color: #3b82f6; background-color: #f8fafc; }
+        .tab-active { border-bottom: 2px solid #3b82f6; color: #3b82f6; font-weight: 600; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900 font-sans min-h-screen">
+    <div class="flex">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white border-r h-screen sticky top-0 p-6">
+            <h1 class="text-xl font-bold mb-8 flex items-center gap-2">
+                📊 Navigation
+            </h1>
+            <nav class="space-y-2">
+                <button onclick="switchPage('comparison')" id="btn-comparison" class="w-full text-left p-3 rounded-lg hover:bg-blue-50 transition flex items-center gap-3 font-medium">
+                    🔄 N vs N+1 Comparison
+                </button>
+                <button onclick="switchPage('tracker')" id="btn-tracker" class="w-full text-left p-3 rounded-lg hover:bg-blue-50 transition flex items-center gap-3 text-gray-600">
+                    📈 Historical Tracker
+                </button>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-10 max-w-6xl mx-auto">
+            <!-- Page: Comparison -->
+            <section id="page-comparison">
+                <header class="mb-8">
+                    <h2 class="text-3xl font-bold mb-2">🔄 Catalog Version Comparison</h2>
+                    <p class="text-blue-600 bg-blue-50 p-3 rounded-lg flex items-center gap-2">
+                        💡 Note: The app automatically prioritizes 'Refno' (IDCode) for precision.
+                    </p>
+                </header>
+
+                <div class="grid grid-cols-2 gap-8 mb-8">
+                    <div class="space-y-2">
+                        <label class="font-semibold block">📂 Upload Catalog N (Older)</label>
+                        <input type="file" id="fileN" accept=".xlsx" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="font-semibold block">📂 Upload Catalog N+1 (Newer)</label>
+                        <input type="file" id="fileN1" accept=".xlsx" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                    </div>
+                </div>
+
+                <div id="loading" class="hidden text-center py-10">
+                    <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600 mx-auto"></div>
+                    <p class="mt-4 text-gray-600">Analyzing catalogs...</p>
+                </div>
+
+                <div id="results" class="hidden">
+                    <hr class="my-8">
+                    
+                    <div id="anomaly-alert" class="hidden mb-6 bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl flex items-start gap-3">
+                        <span class="text-xl">🚨</span>
+                        <div>
+                            <p class="font-bold"><span id="anomaly-count">0</span> References Forgotten or Structural Issues!</p>
+                            <p class="text-sm mt-1">See anomalies below for details.</p>
+                        </div>
+                    </div>
+                    
+                    <div id="success-alert" class="hidden mb-6 bg-green-50 border border-green-200 text-green-700 p-4 rounded-xl flex items-center gap-3">
+                        <span class="text-xl">✅</span>
+                        <p class="font-bold">No references forgotten in Limbo.</p>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-6 mb-8">
+                        <div class="bg-white p-6 rounded-2xl border shadow-sm">
+                            <p class="text-gray-500 text-sm font-medium uppercase tracking-wider mb-1">Total Removed</p>
+                            <p id="stat-removed" class="text-3xl font-bold">0</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl border shadow-sm">
+                            <p class="text-gray-500 text-sm font-medium uppercase tracking-wider mb-1">Total Reactivated</p>
+                            <p id="stat-reactivated" class="text-3xl font-bold">0</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl border shadow-sm">
+                            <p class="text-gray-500 text-sm font-medium uppercase tracking-wider mb-1">Total Added</p>
+                            <p id="stat-added" class="text-3xl font-bold">0</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <details class="bg-white border rounded-xl overflow-hidden group">
+                            <summary class="p-4 cursor-pointer font-bold flex justify-between items-center hover:bg-gray-50">
+                                <span>Show/Hide Removed (Identified by Key)</span>
+                                <span class="group-open:rotate-180 transition-transform">▼</span>
+                            </summary>
+                            <div class="p-4 border-t overflow-x-auto">
+                                <table id="table-removed" class="w-full text-sm text-left"></table>
+                            </div>
+                        </details>
+                        
+                        <details class="bg-white border rounded-xl overflow-hidden group">
+                            <summary class="p-4 cursor-pointer font-bold flex justify-between items-center hover:bg-gray-50">
+                                <span>Show/Hide Reactivated</span>
+                                <span class="group-open:rotate-180 transition-transform">▼</span>
+                            </summary>
+                            <div class="p-4 border-t overflow-x-auto">
+                                <table id="table-reactivated" class="w-full text-sm text-left"></table>
+                            </div>
+                        </details>
+
+                        <details class="bg-white border rounded-xl overflow-hidden group">
+                            <summary class="p-4 cursor-pointer font-bold flex justify-between items-center hover:bg-gray-50">
+                                <span>Show/Hide Brand New Added</span>
+                                <span class="group-open:rotate-180 transition-transform">▼</span>
+                            </summary>
+                            <div class="p-4 border-t overflow-x-auto">
+                                <table id="table-added" class="w-full text-sm text-left"></table>
+                            </div>
+                        </details>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Page: Tracker -->
+            <section id="page-tracker" class="hidden">
+                <header class="mb-8">
+                    <h2 class="text-3xl font-bold mb-2">📈 Historical Modification Tracker</h2>
+                </header>
+                <div class="bg-white p-8 rounded-2xl border border-dashed text-center">
+                    <input type="file" id="trackerFiles" multiple accept=".xlsx" class="hidden">
+                    <label for="trackerFiles" class="cursor-pointer">
+                        <div class="text-blue-600 font-bold mb-2 text-xl">📂 Upload multiple catalogs</div>
+                        <p class="text-gray-500">Select all versions of the catalog to track changes over time</p>
+                    </label>
+                </div>
+                <div id="tracker-results" class="mt-8 hidden">
+                    <h3 class="text-xl font-bold mb-4">⚠️ Modified References</h3>
+                    <div class="bg-white border rounded-xl overflow-hidden mb-6">
+                         <table id="table-modified" class="w-full text-sm text-left"></table>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const POSSIBLE_REF_COLS = ['IDCode', 'Refno', 'Name', 'SPCO', 'Reference', 'REF', 'Ref'];
+        const POSSIBLE_DATE_COLS = ['Last Modification', 'Date_Modif', 'Last Update', 'MODIF_DATE'];
+        const POSSIBLE_CREATION_COLS = ['Creation_Date', 'Date_Creation', 'Creation Date', 'DATE_CREA'];
+        const POSSIBLE_SHEET_NAMES = ['Available', 'Available-NI', 'available', 'AVAILABLE'];
+        const POSSIBLE_LIMBO_NAMES = ['Limbo', 'limbo', 'Limbo-NI', 'LIMBO', 'Limbo_NI'];
+
+        function findCol(columns, aliases) {
+            return aliases.find(alias => columns.includes(alias)) || null;
+        }
+
+        async function loadSmartData(file) {
+            const data = await file.arrayBuffer();
+            const workbook = XLSX.read(data);
+            
+            const findSheet = (aliases) => aliases.find(s => workbook.SheetNames.includes(s));
+            const avSheet = findSheet(POSSIBLE_SHEET_NAMES);
+            const limSheet = findSheet(POSSIBLE_LIMBO_NAMES);
+            
+            if (!avSheet) throw new Error("Could not find an 'Available' sheet");
+            
+            const avData = XLSX.utils.sheet_to_json(workbook.Sheets[avSheet]);
+            const limData = limSheet ? XLSX.utils.sheet_to_json(workbook.Sheets[limSheet]) : [];
+            
+            const cols = Object.keys(avData[0] || {});
+            const ref = findCol(cols, POSSIBLE_REF_COLS);
+            const upd = findCol(cols, POSSIBLE_DATE_COLS);
+            const cre = findCol(cols, POSSIBLE_CREATION_COLS);
+            
+            return { avData, limData, ref, upd, cre };
+        }
+
+        async function analyze() {
+            const fN = document.getElementById('fileN').files[0];
+            const fN1 = document.getElementById('fileN1').files[0];
+            if (!fN || !fN1) return;
+
+            document.getElementById('loading').classList.remove('hidden');
+            document.getElementById('results').classList.add('hidden');
+
+            try {
+                const n = await loadSmartData(fN);
+                const n1 = await loadSmartData(fN1);
+
+                const keysN = new Set(n.avData.map(r => r[n.ref]));
+                const keysN1 = new Set(n1.avData.map(r => r[n1.ref]));
+                const keysLimN1 = new Set(n1.limData.map(r => r[n1.ref]));
+                const keysLimN = new Set(n.limData.map(r => r[n.ref]));
+
+                const removed = n.avData.filter(r => !keysN1.has(r[n.ref]));
+                const forgotten = removed.filter(r => !keysLimN1.has(r[n.ref]));
+                const reactivated = n1.avData.filter(r => keysLimN.has(r[n1.ref]));
+                const added = n1.avData.filter(r => !keysN.has(r[n1.ref]) && !keysLimN.has(r[n1.ref]));
+
+                // Update Stats
+                document.getElementById('stat-removed').innerText = removed.length;
+                document.getElementById('stat-reactivated').innerText = reactivated.length;
+                document.getElementById('stat-added').innerText = added.length;
+
+                // Alerts
+                if (forgotten.length > 0) {
+                    document.getElementById('anomaly-alert').classList.remove('hidden');
+                    document.getElementById('anomaly-count').innerText = forgotten.length;
+                    document.getElementById('success-alert').classList.add('hidden');
+                } else {
+                    document.getElementById('anomaly-alert').classList.add('hidden');
+                    document.getElementById('success-alert').classList.remove('hidden');
+                }
+
+                renderTable('table-removed', removed);
+                renderTable('table-reactivated', reactivated);
+                renderTable('table-added', added);
+
+                document.getElementById('results').classList.remove('hidden');
+            } catch (err) {
+                alert("Error: " + err.message);
+            } finally {
+                document.getElementById('loading').classList.add('hidden');
+            }
+        }
+
+        function renderTable(id, data) {
+            const table = document.getElementById(id);
+            if (!data.length) {
+                table.innerHTML = "<tr><td class='p-4 text-gray-400'>No data to show</td></tr>";
+                return;
+            }
+            const cols = Object.keys(data[0]);
+            let html = "<thead class='bg-gray-50'><tr>";
+            cols.forEach(c => html += `<th class='p-3 border-b'>${c}</th>`);
+            html += "</tr></thead><tbody>";
+            data.slice(0, 10).forEach(row => {
+                html += "<tr class='hover:bg-gray-50'>";
+                cols.forEach(c => html += `<td class='p-3 border-b'>${row[c] || ''}</td>`);
+                html += "</tr>";
+            });
+            html += "</tbody>";
+            if (data.length > 10) html += `<tfoot><tr><td colspan="${cols.length}" class="p-3 text-center text-gray-500 italic">... and ${data.length - 10} more rows</td></tr></tfoot>`;
+            table.innerHTML = html;
+        }
+
+        function switchPage(p) {
+            document.getElementById('page-comparison').classList.toggle('hidden', p !== 'comparison');
+            document.getElementById('page-tracker').classList.toggle('hidden', p !== 'tracker');
+            document.getElementById('btn-comparison').classList.toggle('bg-blue-50', p === 'comparison');
+            document.getElementById('btn-comparison').classList.toggle('text-blue-600', p === 'comparison');
+            document.getElementById('btn-tracker').classList.toggle('bg-blue-50', p === 'tracker');
+            document.getElementById('btn-tracker').classList.toggle('text-blue-600', p === 'tracker');
+        }
+
+        document.getElementById('fileN').addEventListener('change', analyze);
+        document.getElementById('fileN1').addEventListener('change', analyze);
+    </script>
+</body>
+</html>
