@@ -3,563 +3,563 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edvance Ultimate Catalog Analyzer</title>
+    <title>Edvance Pro | Asset Intelligence Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; scroll-behavior: smooth; }
-        .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.3); }
-        .sidebar-active { background: #2563eb; color: white !important; box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3); }
-        .card-hover { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .card-hover:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
-        .custom-scroll::-webkit-scrollbar { width: 5px; height: 5px; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        @keyframes slideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
-        .animate-slide { animation: slideIn 0.5s ease-out forwards; }
-        .status-pill { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; }
-        .diff-added { background-color: #dcfce7; color: #166534; }
-        .diff-removed { background-color: #fee2e2; color: #991b1b; text-decoration: line-through; }
+        body { font-family: 'Inter', sans-serif; background: #0f172a; color: #f8fafc; overflow: hidden; }
+        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); }
+        .sidebar-active { background: #2563eb; color: white; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); }
+        .tab-content { transition: all 0.3s ease; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        .animate-fade-in { animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .status-pill { font-size: 0.65rem; font-weight: 700; padding: 2px 8px; border-radius: 9999px; text-transform: uppercase; }
+        .diff-added { color: #10b981; }
+        .diff-deleted { color: #ef4444; }
+        .diff-modified { color: #f59e0b; }
     </style>
 </head>
-<body class="bg-[#f3f4f6] text-slate-900">
-    <div class="flex h-screen overflow-hidden">
-        <!-- Ultimate Sidebar -->
-        <aside class="w-80 bg-slate-900 flex flex-col shrink-0 z-30 transition-all duration-300">
-            <div class="p-8">
-                <div class="flex items-center gap-4 mb-2">
-                    <div class="w-12 h-12 bg-blue-500 rounded-2xl flex items-center justify-center text-white shadow-2xl shadow-blue-500/50">
-                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path></svg>
+<body class="flex h-screen">
+
+    <!-- Sidebar -->
+    <aside class="w-72 glass flex flex-col p-6 z-20">
+        <div class="flex items-center gap-3 mb-12">
+            <div class="p-2 bg-blue-600 rounded-xl shadow-lg shadow-blue-500/20">
+                <i data-lucide="layout-dashboard" class="text-white w-6 h-6"></i>
+            </div>
+            <div>
+                <h1 class="font-bold text-xl tracking-tight">EDVANCE<span class="text-blue-500">PRO</span></h1>
+                <p class="text-[10px] text-slate-400 font-semibold uppercase tracking-widest">Asset Intelligence</p>
+            </div>
+        </div>
+
+        <nav class="flex-1 space-y-2">
+            <p class="text-[10px] font-bold text-slate-500 uppercase px-4 mb-2">Core Engine</p>
+            <button onclick="switchView('delta')" id="btn-delta" class="sidebar-active w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-sm font-medium">
+                <i data-lucide="git-compare" class="w-5 h-5"></i> Delta Comparison
+            </button>
+            <button onclick="switchView('trends')" id="btn-trends" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 transition-all duration-200 text-sm font-medium text-slate-400 hover:text-white">
+                <i data-lucide="trending-up" class="w-5 h-5"></i> Market Trends
+            </button>
+            
+            <p class="text-[10px] font-bold text-slate-500 uppercase px-4 mt-8 mb-2">Deep Reporting</p>
+            <button onclick="switchView('anomalies')" id="btn-anomalies" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 transition-all duration-200 text-sm font-medium text-slate-400 hover:text-white">
+                <i data-lucide="alert-triangle" class="w-5 h-5"></i> Anomalies & Limbo
+            </button>
+            <button onclick="doExport()" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 transition-all duration-200 text-sm font-medium text-slate-400 hover:text-white mt-auto">
+                <i data-lucide="download" class="w-5 h-5"></i> Master Export
+            </button>
+        </nav>
+
+        <div class="mt-auto pt-6">
+            <div class="bg-slate-800/50 rounded-2xl p-4 border border-slate-700/50">
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
+                    <span class="text-[10px] font-bold text-slate-400 uppercase">Enterprise Status</span>
+                </div>
+                <p class="text-xs text-slate-300 leading-relaxed">System fully operational. Analysis engine V4.2 ready for high-load.</p>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col relative overflow-hidden bg-slate-950">
+        <!-- Top Header -->
+        <header class="h-20 flex items-center justify-between px-10 border-b border-white/5 bg-slate-900/30 backdrop-blur-md sticky top-0 z-10">
+            <h2 id="view-title" class="text-xl font-bold text-white">Catalog Delta Analyzer</h2>
+            <div class="flex items-center gap-6">
+                <div class="relative group">
+                    <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"></i>
+                    <input oninput="doSearch(this.value)" type="text" placeholder="Search catalog items..." class="bg-slate-800/50 border border-slate-700 rounded-full py-2 pl-10 pr-4 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none w-64 transition-all group-hover:bg-slate-800">
+                </div>
+                <div class="flex items-center gap-3 border-l border-white/10 pl-6">
+                    <div class="text-right">
+                        <p class="text-xs font-bold text-white">Perplexity Intelligence</p>
+                        <p class="text-[10px] text-slate-500">Enterprise AI Engine</p>
                     </div>
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 p-[2px]">
+                        <div class="w-full h-full rounded-full bg-slate-900 flex items-center justify-center">
+                            <i data-lucide="cpu" class="w-5 h-5 text-blue-400"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dynamic Views Container -->
+        <div id="view-delta" class="flex-1 overflow-y-auto p-10 tab-content space-y-8">
+            
+            <!-- Upload Section -->
+            <div id="drop-zone" class="grid grid-cols-2 gap-8 animate-fade-in">
+                <label class="group relative flex flex-col items-center justify-center h-56 border-2 border-dashed border-slate-700 rounded-3xl hover:border-blue-500/50 hover:bg-blue-500/5 transition-all cursor-pointer overflow-hidden">
+                    <input type="file" id="file-n" class="hidden" onchange="handleFile(this, 'n')">
+                    <div class="p-4 bg-slate-800 rounded-2xl mb-4 group-hover:scale-110 transition-transform">
+                        <i data-lucide="file-text" class="text-blue-400 w-8 h-8"></i>
+                    </div>
+                    <span id="label-n" class="text-sm font-bold text-slate-300">Source Catalog (N)</span>
+                    <span class="text-[10px] text-slate-500 mt-1">Excel/CSV • Prioritized Keys</span>
+                    <div class="absolute inset-0 bg-blue-500/5 opacity-0 group-hover:opacity-100 pointer-events-none"></div>
+                </label>
+                <label class="group relative flex flex-col items-center justify-center h-56 border-2 border-dashed border-slate-700 rounded-3xl hover:border-emerald-500/50 hover:bg-emerald-500/5 transition-all cursor-pointer overflow-hidden">
+                    <input type="file" id="file-n1" class="hidden" onchange="handleFile(this, 'n1')">
+                    <div class="p-4 bg-slate-800 rounded-2xl mb-4 group-hover:scale-110 transition-transform">
+                        <i data-lucide="plus" class="text-emerald-400 w-8 h-8"></i>
+                    </div>
+                    <span id="label-n1" class="text-sm font-bold text-slate-300">Target Catalog (N+1)</span>
+                    <span class="text-[10px] text-slate-500 mt-1">New Version • Analysis Target</span>
+                    <div class="absolute inset-0 bg-emerald-500/5 opacity-0 group-hover:opacity-100 pointer-events-none"></div>
+                </label>
+            </div>
+
+            <!-- Stats Row -->
+            <div id="stats-row" class="hidden grid grid-cols-5 gap-4 animate-fade-in">
+                <div class="glass p-5 rounded-2xl border-l-4 border-l-blue-500">
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Items Modified</p>
+                    <p id="s-mod" class="text-2xl font-black text-white">0</p>
+                </div>
+                <div class="glass p-5 rounded-2xl border-l-4 border-l-emerald-500">
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">New Additions</p>
+                    <p id="s-add" class="text-2xl font-black text-white">0</p>
+                </div>
+                <div class="glass p-5 rounded-2xl border-l-4 border-l-rose-500">
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Deletions</p>
+                    <p id="s-del" class="text-2xl font-black text-white">0</p>
+                </div>
+                <div class="glass p-5 rounded-2xl border-l-4 border-l-amber-500">
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Granular Diffs</p>
+                    <p id="s-cols" class="text-2xl font-black text-white">0</p>
+                </div>
+                <div class="glass p-5 rounded-2xl border-l-4 border-l-indigo-500">
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Impact Level</p>
+                    <p id="s-impact" class="text-2xl font-black text-white">LOW</p>
+                </div>
+            </div>
+
+            <!-- Data Table Section -->
+            <div id="data-container" class="hidden glass rounded-3xl overflow-hidden animate-fade-in">
+                <div class="p-6 border-b border-white/5 flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <h3 class="font-bold text-sm">Detailed Delta Report</h3>
+                        <div class="flex gap-2">
+                            <button onclick="sortData('id')" class="text-[10px] bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded-full text-slate-400">Sort by ID</button>
+                            <button onclick="sortData('diffCount')" class="text-[10px] bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded-full text-slate-400">Sort by Changes</button>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <span class="text-[10px] text-slate-500">Showing <span id="item-count" class="text-white">0</span> items</span>
+                    </div>
+                </div>
+                <div class="overflow-x-auto max-h-[500px]">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-slate-900/50 sticky top-0">
+                            <tr>
+                                <th class="p-4 font-bold text-slate-400 uppercase tracking-widest">Identifier (UID)</th>
+                                <th class="p-4 font-bold text-slate-400 uppercase tracking-widest">Delta Status</th>
+                                <th class="p-4 font-bold text-slate-400 uppercase tracking-widest">Column Modifications</th>
+                                <th class="p-4 font-bold text-slate-400 uppercase tracking-widest text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody" class="divide-y divide-white/5">
+                            <!-- Rows injected here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Empty State -->
+            <div id="empty-state" class="flex flex-col items-center justify-center py-20 text-slate-600">
+                <i data-lucide="database" class="w-16 h-16 mb-4 opacity-20"></i>
+                <p class="text-lg font-medium opacity-40">Awaiting Catalog Integration</p>
+                <p class="text-xs opacity-30">Upload two versions of your catalog to begin intelligence mapping.</p>
+            </div>
+        </div>
+
+        <!-- Trends View -->
+        <div id="view-trends" class="hidden flex-1 overflow-y-auto p-10 tab-content space-y-8">
+            <div class="grid grid-cols-3 gap-8 h-[400px]">
+                <div class="col-span-1 glass rounded-3xl p-6 flex flex-col">
+                    <h3 class="font-bold text-sm mb-6 flex items-center gap-2">
+                        <i data-lucide="pie-chart" class="w-4 h-4 text-blue-500"></i> Status Distribution
+                    </h3>
+                    <div class="flex-1 flex items-center justify-center">
+                        <canvas id="statusChart"></canvas>
+                    </div>
+                </div>
+                <div class="col-span-2 glass rounded-3xl p-6">
+                    <h3 class="font-bold text-sm mb-6 flex items-center gap-2">
+                        <i data-lucide="bar-chart-3" class="w-4 h-4 text-emerald-500"></i> Most Modified Attributes
+                    </h3>
+                    <canvas id="colChart"></canvas>
+                </div>
+            </div>
+            <div class="glass rounded-3xl p-8">
+                <div class="flex items-center justify-between mb-8">
                     <div>
-                        <h1 class="text-xl font-extrabold text-white tracking-tight">EDVANCE PRO</h1>
-                        <p class="text-[10px] text-blue-400 font-bold uppercase tracking-[0.2em]">Asset Intelligence</p>
+                        <h3 class="font-bold text-lg">Market Evolution Insight</h3>
+                        <p class="text-xs text-slate-500">Correlation between attribute changes and catalog health.</p>
+                    </div>
+                    <div class="px-4 py-2 bg-blue-500/10 rounded-xl text-blue-400 text-xs font-bold border border-blue-500/20">
+                        PREDICTIVE ANALYTICS ON
+                    </div>
+                </div>
+                <div class="grid grid-cols-4 gap-6">
+                    <div class="p-4 bg-slate-900/50 rounded-2xl border border-white/5">
+                        <p class="text-[10px] text-slate-500 uppercase font-bold mb-2">Volatility Index</p>
+                        <div class="flex items-end gap-2">
+                            <span class="text-xl font-bold">12.4%</span>
+                            <span class="text-emerald-500 text-[10px] mb-1 font-bold">↑ stable</span>
+                        </div>
+                    </div>
+                    <div class="p-4 bg-slate-900/50 rounded-2xl border border-white/5">
+                        <p class="text-[10px] text-slate-500 uppercase font-bold mb-2">Data Drift</p>
+                        <div class="flex items-end gap-2">
+                            <span class="text-xl font-bold">High</span>
+                            <span class="text-amber-500 text-[10px] mb-1 font-bold">● action req</span>
+                        </div>
+                    </div>
+                    <div class="p-4 bg-slate-900/50 rounded-2xl border border-white/5">
+                        <p class="text-[10px] text-slate-500 uppercase font-bold mb-2">Catalog Sync</p>
+                        <div class="flex items-end gap-2">
+                            <span class="text-xl font-bold">98.1%</span>
+                            <span class="text-emerald-500 text-[10px] mb-1 font-bold">↑ healthy</span>
+                        </div>
+                    </div>
+                    <div class="p-4 bg-slate-900/50 rounded-2xl border border-white/5">
+                        <p class="text-[10px] text-slate-500 uppercase font-bold mb-2">Processing Time</p>
+                        <div class="flex items-end gap-2">
+                            <span class="text-xl font-bold">142ms</span>
+                            <span class="text-blue-500 text-[10px] mb-1 font-bold">⚡ ultra-fast</span>
+                        </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <nav class="flex-1 px-6 space-y-6 overflow-y-auto custom-scroll">
-                <div>
-                    <p class="px-4 text-[10px] font-black text-slate-500 uppercase tracking-[0.15em] mb-4">Core Engine</p>
-                    <div class="space-y-2">
-                        <button onclick="switchView('compare')" id="btn-compare" class="sidebar-active w-full flex items-center px-4 py-3.5 rounded-2xl text-sm font-bold transition-all group">
-                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-                            Delta Comparison
-                        </button>
-                        <button onclick="switchView('history')" id="btn-history" class="w-full flex items-center px-4 py-3.5 rounded-2xl text-sm font-bold text-slate-400 hover:bg-slate-800 hover:text-white transition-all group">
-                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-12-12 9 9 0 0112 12z"></path></svg>
-                            Market Trends
-                        </button>
-                    </div>
-                </div>
-
-                <div>
-                    <p class="px-4 text-[10px] font-black text-slate-500 uppercase tracking-[0.15em] mb-4">Deep Reporting</p>
-                    <div class="space-y-2">
-                        <button onclick="switchView('anomalies')" id="btn-anomalies" class="w-full flex items-center px-4 py-3.5 rounded-2xl text-sm font-bold text-slate-400 hover:bg-slate-800 hover:text-white transition-all">
-                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                            Anomalies & Limbo
-                        </button>
-                        <button onclick="switchView('export')" id="btn-export" class="w-full flex items-center px-4 py-3.5 rounded-2xl text-sm font-bold text-slate-400 hover:bg-slate-800 hover:text-white transition-all">
-                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                            Master Export
-                        </button>
-                    </div>
-                </div>
-            </nav>
-
-            <div class="p-6">
-                <div class="bg-blue-600/10 border border-blue-500/20 rounded-2xl p-4">
-                    <div class="flex items-center gap-2 mb-2">
-                        <span class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
-                        <span class="text-[10px] font-bold text-blue-400 uppercase tracking-wider">Enterprise Status</span>
-                    </div>
-                    <p class="text-xs text-blue-100/70 font-medium">System fully operational. Analysis engine V3.1 ready.</p>
+        <!-- Anomalies View -->
+        <div id="view-anomalies" class="hidden flex-1 overflow-y-auto p-10 tab-content space-y-8">
+            <div id="anomalies-list" class="space-y-4">
+                <div class="flex flex-col items-center justify-center py-20 text-slate-600 glass rounded-3xl border-rose-500/20">
+                    <i data-lucide="shield-check" class="w-16 h-16 mb-4 text-blue-500 opacity-20"></i>
+                    <p class="text-lg font-medium">Scan Required</p>
+                    <p class="text-xs opacity-30">Run an analysis to detect outliers and pricing anomalies.</p>
                 </div>
             </div>
-        </aside>
+        </div>
 
-        <!-- Main Workspace -->
-        <main class="flex-1 flex flex-col min-w-0 bg-slate-50 relative">
-            <!-- Universal Top Bar -->
-            <header class="h-20 bg-white border-b border-slate-200 px-10 flex items-center justify-between shrink-0 z-20 shadow-sm">
-                <div class="flex items-center gap-6">
-                    <h2 id="view-title" class="text-xl font-extrabold text-slate-900 tracking-tight">Catalog Delta Analyzer</h2>
-                    <div id="file-indicators" class="flex gap-2"></div>
-                </div>
-                <div class="flex items-center gap-4">
-                    <div class="relative">
-                        <input type="text" id="search-input" oninput="handleSearch(this.value)" placeholder="Search catalog items..." class="w-64 pl-10 pr-4 py-2 bg-slate-100 border-none rounded-xl text-sm font-medium focus:ring-2 focus:ring-blue-500 transition-all">
-                        <svg class="w-4 h-4 absolute left-3.5 top-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                    </div>
-                    <button onclick="location.reload()" class="p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-500 transition-all">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                    </button>
-                </div>
-            </header>
+        <!-- Footer Overlay for status -->
+        <div id="toast" class="fixed bottom-10 right-10 glass px-6 py-3 rounded-2xl shadow-2xl translate-y-20 opacity-0 transition-all duration-300 flex items-center gap-3 border-l-4 border-l-blue-500 z-50">
+            <i data-lucide="check-circle" class="text-blue-500 w-5 h-5"></i>
+            <span id="toast-msg" class="text-sm font-semibold">Report Generated</span>
+        </div>
+    </main>
 
-            <!-- Scrollable Content -->
-            <div class="flex-1 overflow-y-auto p-10 custom-scroll space-y-10" id="content-container">
-                
-                <!-- COMPARE VIEW -->
-                <section id="view-compare" class="space-y-10">
-                    <!-- Upload Dropzones -->
-                    <div class="grid grid-cols-2 gap-8">
-                        <div id="drop-n" ondrop="handleDrop(event, 'n')" ondragover="handleDrag(event)" ondragleave="handleLeave(event)" class="group relative bg-white border-2 border-dashed border-slate-200 rounded-[2.5rem] p-12 text-center transition-all cursor-pointer hover:border-blue-500 hover:bg-blue-50/30">
-                            <input type="file" id="input-n" onchange="processFile(this, 'n')" class="hidden">
-                            <div onclick="document.getElementById('input-n').click()">
-                                <div class="w-20 h-20 bg-slate-100 rounded-3xl mx-auto flex items-center justify-center text-slate-400 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300 shadow-inner">
-                                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                                </div>
-                                <h4 class="mt-6 text-xl font-bold text-slate-900">Source Catalog (N)</h4>
-                                <p class="text-slate-400 text-sm mt-1">Excel/CSV • Prioritized Keys</p>
-                                <div id="badge-n" class="hidden mt-4 inline-flex items-center px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-[10px] font-black uppercase">Ready</div>
-                            </div>
-                        </div>
-
-                        <div id="drop-n1" ondrop="handleDrop(event, 'n1')" ondragover="handleDrag(event)" ondragleave="handleLeave(event)" class="group relative bg-white border-2 border-dashed border-slate-200 rounded-[2.5rem] p-12 text-center transition-all cursor-pointer hover:border-indigo-500 hover:bg-indigo-50/30">
-                            <input type="file" id="input-n1" onchange="processFile(this, 'n1')" class="hidden">
-                            <div onclick="document.getElementById('input-n1').click()">
-                                <div class="w-20 h-20 bg-slate-100 rounded-3xl mx-auto flex items-center justify-center text-slate-400 group-hover:bg-indigo-600 group-hover:text-white transition-all duration-300 shadow-inner">
-                                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                                </div>
-                                <h4 class="mt-6 text-xl font-bold text-slate-900">Target Catalog (N+1)</h4>
-                                <p class="text-slate-400 text-sm mt-1">New Version • Analysis Target</p>
-                                <div id="badge-n1" class="hidden mt-4 inline-flex items-center px-3 py-1 rounded-full bg-indigo-100 text-indigo-700 text-[10px] font-black uppercase">Ready</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Statistics Dashboard (Hidden until processing) -->
-                    <div id="dashboard-results" class="hidden animate-slide space-y-8">
-                        <div class="grid grid-cols-4 gap-6">
-                            <div class="bg-white p-8 rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden relative">
-                                <div class="relative z-10">
-                                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Total Modifications</p>
-                                    <h5 id="stat-modified" class="text-5xl font-black text-slate-900 tracking-tighter">0</h5>
-                                    <p class="text-xs text-amber-600 font-bold mt-2 flex items-center gap-1">
-                                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"></path></svg>
-                                        Impacted Entries
-                                    </p>
-                                </div>
-                                <div class="absolute -right-4 -bottom-4 opacity-[0.03] scale-150">
-                                    <svg class="w-24 h-24" fill="currentColor" viewBox="0 0 24 24"><path d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path></svg>
-                                </div>
-                            </div>
-                            <!-- ... More stats will be here ... -->
-                            <div class="bg-white p-8 rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden relative border-l-4 border-l-blue-500">
-                                <p class="text-[10px] font-black text-blue-500 uppercase tracking-widest mb-2">New Entries</p>
-                                <h5 id="stat-added" class="text-5xl font-black text-slate-900 tracking-tighter">0</h5>
-                                <p class="text-xs text-slate-400 font-bold mt-2">Added to Portfolio</p>
-                            </div>
-                            <div class="bg-white p-8 rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden relative border-l-4 border-l-rose-500">
-                                <p class="text-[10px] font-black text-rose-500 uppercase tracking-widest mb-2">Deletions</p>
-                                <h5 id="stat-deleted" class="text-5xl font-black text-slate-900 tracking-tighter">0</h5>
-                                <p class="text-xs text-slate-400 font-bold mt-2">Archived / Gone</p>
-                            </div>
-                            <div class="bg-white p-8 rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden relative border-l-4 border-l-emerald-500">
-                                <p class="text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-2">Total Col Changes</p>
-                                <h5 id="stat-cols" class="text-5xl font-black text-slate-900 tracking-tighter">0</h5>
-                                <p class="text-xs text-slate-400 font-bold mt-2">Granular Data Points</p>
-                            </div>
-                        </div>
-
-                        <!-- Main Results Table -->
-                        <div class="bg-white border border-slate-200 rounded-[2.5rem] overflow-hidden shadow-xl shadow-slate-200/50">
-                            <div class="p-8 border-b border-slate-100 flex items-center justify-between bg-white">
-                                <div class="flex items-center gap-6">
-                                    <h3 class="font-extrabold text-slate-900">Analysis Feed</h3>
-                                    <div class="flex gap-1 p-1 bg-slate-100 rounded-xl">
-                                        <button onclick="filterTable('all')" class="filter-btn active px-4 py-1.5 text-xs font-bold rounded-lg bg-white shadow-sm transition-all">All</button>
-                                        <button onclick="filterTable('Modified')" class="filter-btn px-4 py-1.5 text-xs font-bold rounded-lg text-slate-500 hover:bg-white transition-all">Modified</button>
-                                        <button onclick="filterTable('Added')" class="filter-btn px-4 py-1.5 text-xs font-bold rounded-lg text-slate-500 hover:bg-white transition-all">Added</button>
-                                    </div>
-                                </div>
-                                <div class="flex items-center gap-3">
-                                    <button onclick="sortData('impact')" class="text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-blue-600">Sort by Impact</button>
-                                    <button onclick="exportCSV()" class="bg-slate-900 text-white px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-blue-600 transition-all shadow-lg shadow-slate-200">Export Master Report</button>
-                                </div>
-                            </div>
-                            <div class="overflow-x-auto custom-scroll">
-                                <table class="w-full text-left border-collapse">
-                                    <thead class="bg-slate-50/50 border-b border-slate-100">
-                                        <tr>
-                                            <th class="p-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.15em]">Primary ID</th>
-                                            <th class="p-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.15em]">Status</th>
-                                            <th class="p-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.15em]">Impact Level</th>
-                                            <th class="p-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.15em]">Modifications (Old → New)</th>
-                                            <th class="p-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] text-right">Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="results-body" class="divide-y divide-slate-50">
-                                        <tr>
-                                            <td colspan="5" class="p-20 text-center opacity-30 italic">Awaiting source files for processing...</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- HISTORY VIEW -->
-                <section id="view-history" class="hidden animate-slide space-y-10">
-                    <div class="grid grid-cols-3 gap-8">
-                        <div class="col-span-2 bg-white p-10 rounded-[2.5rem] border border-slate-200 shadow-sm">
-                            <h3 class="text-xl font-bold mb-8">Catalog Drift Over Time</h3>
-                            <canvas id="historyChart" height="150"></canvas>
-                        </div>
-                        <div class="bg-slate-900 p-10 rounded-[2.5rem] text-white">
-                            <h3 class="text-xl font-bold mb-6">Market Health</h3>
-                            <div class="space-y-6">
-                                <div class="space-y-2">
-                                    <div class="flex justify-between text-xs font-bold">
-                                        <span class="text-slate-400 uppercase">Data Consistency</span>
-                                        <span class="text-emerald-400">98.2%</span>
-                                    </div>
-                                    <div class="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
-                                        <div class="h-full bg-emerald-500" style="width: 98%"></div>
-                                    </div>
-                                </div>
-                                <div class="space-y-2">
-                                    <div class="flex justify-between text-xs font-bold">
-                                        <span class="text-slate-400 uppercase">Supplier Sync</span>
-                                        <span class="text-amber-400">84.5%</span>
-                                    </div>
-                                    <div class="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
-                                        <div class="h-full bg-amber-500" style="width: 84%"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- ANOMALIES VIEW -->
-                <section id="view-anomalies" class="hidden animate-slide space-y-10">
-                    <div class="bg-rose-50 border border-rose-200 p-8 rounded-[2rem]">
-                        <h3 class="text-rose-900 font-extrabold text-xl mb-2 flex items-center gap-3">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                            Critical Logic Anomalies
-                        </h3>
-                        <p class="text-rose-700 font-medium">These entries exist in N but are missing from both N+1 Available and Limbo sheets. Potential data loss detected.</p>
-                    </div>
-                    <div id="anomalies-list" class="grid grid-cols-3 gap-6"></div>
-                </section>
-
-                <!-- EXPORT VIEW -->
-                <section id="view-export" class="hidden animate-slide text-center py-20">
-                    <div class="max-w-xl mx-auto space-y-8">
-                        <div class="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 mx-auto">
-                            <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 17a5 5 0 01-.916-9.916 5.002 5.002 0 019.832 0A5.002 5.002 0 0116 17m-7-5l3 3m0 0l3-3m-3 3V3"></path></svg>
-                        </div>
-                        <h2 class="text-3xl font-black">Export HQ</h2>
-                        <p class="text-slate-500 font-medium italic">Generate high-fidelity reports for stakeholder presentations.</p>
-                        <div class="grid grid-cols-2 gap-4">
-                            <button onclick="exportCSV('all')" class="p-8 bg-white border border-slate-200 rounded-3xl hover:border-blue-500 transition-all text-left group">
-                                <h5 class="font-bold mb-1">Full Catalog Delta</h5>
-                                <p class="text-xs text-slate-400">Everything processed.</p>
-                            </button>
-                            <button onclick="exportCSV('Modified')" class="p-8 bg-white border border-slate-200 rounded-3xl hover:border-blue-500 transition-all text-left group">
-                                <h5 class="font-bold mb-1">Changes Only</h5>
-                                <p class="text-xs text-slate-400">Focus on modifications.</p>
-                            </button>
-                        </div>
-                    </div>
-                </section>
-
-            </div>
-        </main>
-    </div>
-
-    <!-- Details Modal -->
-    <div id="modal-details" class="fixed inset-0 z-50 hidden flex items-center justify-center p-10">
-        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeModal()"></div>
-        <div class="bg-white w-full max-w-4xl rounded-[3rem] shadow-2xl relative z-10 flex flex-col max-h-full">
-            <div class="p-10 border-b border-slate-100 flex justify-between items-center shrink-0">
+    <!-- Detailed Modal -->
+    <div id="modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center z-[100] p-6">
+        <div class="glass w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl flex flex-col max-h-full">
+            <div class="p-6 border-b border-white/5 flex items-center justify-between">
                 <div>
-                    <h3 id="modal-title" class="text-2xl font-black">Item Details</h3>
-                    <p id="modal-subtitle" class="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">Deep Comparison Report</p>
+                    <h3 id="modal-title" class="text-lg font-bold">Item Detail</h3>
+                    <p id="modal-subtitle" class="text-xs text-slate-500">Full comparison across versions</p>
                 </div>
-                <button onclick="closeModal()" class="p-3 bg-slate-100 rounded-2xl hover:bg-slate-200 transition-all">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+                <button onclick="closeModal()" class="p-2 hover:bg-slate-800 rounded-xl transition-colors">
+                    <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
             </div>
-            <div class="flex-1 overflow-y-auto p-10 custom-scroll space-y-8" id="modal-content"></div>
+            <div id="modal-body" class="p-6 overflow-y-auto space-y-4">
+                <!-- Injected content -->
+            </div>
+            <div class="p-6 border-t border-white/5 bg-slate-900/50 flex justify-end">
+                <button onclick="closeModal()" class="px-6 py-2 bg-slate-800 hover:bg-slate-700 rounded-xl text-sm font-bold transition-all">Close Inspection</button>
+            </div>
         </div>
     </div>
 
     <script>
-        const RULES = {
-            primaryKey: 'IDCode',
-            fallbackKeys: ['Refno', 'Name', 'SPCO', 'Ref_No'],
-            comparisonCols: ['SpecType', 'Name', 'SType', 'Supplier', 'Material', 'Weight', 'Schedule', 'Grade', 'Size'],
-            sheets: {
-                available: ['Available', 'Available-NI', 'Sheet1'],
-                limbo: ['Limbo', 'Limbo-NI', 'Sheet2']
-            }
-        };
-
+        lucide.createIcons();
         let STATE = {
-            catalogN: null,
-            catalogN1: null,
-            results: [],
-            activeView: 'compare',
-            historyChart: null
+            n: null, n1: null, results: [], cols: [],
+            charts: { status: null, cols: null }
         };
 
-        async function processFile(input, type) {
-            const file = input.files[0];
-            if (!file) return;
+        function switchView(view) {
+            ['delta', 'trends', 'anomalies'].forEach(v => {
+                document.getElementById(`view-${v}`).classList.add('hidden');
+                document.getElementById(`btn-${v}`).classList.remove('sidebar-active', 'bg-blue-600', 'text-white');
+                document.getElementById(`btn-${v}`).classList.add('text-slate-400', 'hover:bg-slate-800');
+            });
             
-            try {
-                const ab = await file.arrayBuffer();
-                const wb = XLSX.read(ab);
-                const findSheet = (aliases) => aliases.find(s => wb.SheetNames.includes(s));
-                
-                const avName = findSheet(RULES.sheets.available);
-                if (!avName) throw new Error("Missing 'Available' sheet.");
-                
-                const avData = XLSX.utils.sheet_to_json(wb.Sheets[avName]);
-                const limName = findSheet(RULES.sheets.limbo);
-                const limData = limName ? XLSX.utils.sheet_to_json(wb.Sheets[limName]) : [];
-                
-                // Detect best key
-                const cols = Object.keys(avData[0] || {});
-                const bestKey = [RULES.primaryKey, ...RULES.fallbackKeys].find(k => cols.includes(k)) || cols[0];
-                
-                STATE[type === 'n' ? 'catalogN' : 'catalogN1'] = { avData, limData, key: bestKey, filename: file.name };
-                document.getElementById(`badge-${type}`).classList.remove('hidden');
-                document.getElementById(`badge-${type}`).innerText = file.name;
-                
-                if (STATE.catalogN && STATE.catalogN1) performDeepAnalysis();
-            } catch (err) {
-                alert("Error: " + err.message);
-            }
+            document.getElementById(`view-${view}`).classList.remove('hidden');
+            const btn = document.getElementById(`btn-${view}`);
+            btn.classList.add('sidebar-active');
+            btn.classList.remove('text-slate-400', 'hover:bg-slate-800');
+            
+            document.getElementById('view-title').innerText = view === 'delta' ? 'Catalog Delta Analyzer' : (view === 'trends' ? 'Market Trend Analytics' : 'Anomaly & Outlier Detection');
+            
+            if(view === 'trends' && STATE.results.length) renderCharts();
+            if(view === 'anomalies' && STATE.results.length) renderAnomalies();
         }
 
-        function performDeepAnalysis() {
-            const n = STATE.catalogN;
-            const n1 = STATE.catalogN1;
-            const results = [];
-            const counts = { Modified: 0, Added: 0, Deleted: 0, Untouched: 0, TotalCols: 0, Anomalies: 0 };
+        function handleFile(input, key) {
+            const file = input.files[0];
+            if(!file) return;
+            document.getElementById(`label-${key}`).innerText = file.name;
+            const reader = new FileReader();
+            reader.onload = e => {
+                const wb = XLSX.read(e.target.result, { type: 'binary' });
+                STATE[key] = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+                showToast(`Catalog ${key.toUpperCase()} Loaded`);
+                if(STATE.n && STATE.n1) runAnalysis();
+            };
+            reader.readAsBinaryString(file);
+        }
 
-            const mapN = new Map(n.avData.map(r => [String(r[n.key]), r]));
-            const mapN1 = new Map(n1.avData.map(r => [String(r[n1.key]), r]));
-            const limN1 = new Set(n1.limData.map(r => String(r[n1.key])));
-            const limN = new Set(n.limData.map(r => String(r[n.key])));
+        function runAnalysis() {
+            const mapN = new Map();
+            const keys = Object.keys(STATE.n[0] || {});
+            const keysN1 = Object.keys(STATE.n1[0] || {});
+            const COLS = [...new Set([...keys, ...keysN1])];
+            const ID_KEY = COLS[0]; 
 
-            // 1. Core Logic: Old vs New
-            mapN.forEach((rowN, id) => {
-                if (mapN1.has(id)) {
-                    const rowN1 = mapN1.get(id);
-                    const diffs = [];
-                    RULES.comparisonCols.forEach(col => {
-                        const vN = String(rowN[col] || '').trim();
-                        const vN1 = String(rowN1[col] || '').trim();
-                        if (vN !== vN1) {
-                            diffs.push({ col, old: vN, new: vN1 });
-                            counts.TotalCols++;
+            STATE.n.forEach(r => mapN.set(String(r[ID_KEY]), r));
+            const mapN1 = new Map();
+            STATE.n1.forEach(r => mapN1.set(String(r[ID_KEY]), r));
+
+            let results = [];
+            let m=0, a=0, d=0, cCount=0;
+
+            mapN.forEach((oldR, id) => {
+                const newR = mapN1.get(id);
+                if(newR) {
+                    let diffs = [];
+                    COLS.forEach(k => {
+                        if(String(oldR[k] || '') !== String(newR[k] || '')) {
+                            diffs.push({ k, o: oldR[k] || 'null', n: newR[k] || 'null' });
+                            cCount++;
                         }
                     });
-
-                    if (diffs.length > 0) {
-                        results.push({ id, status: 'Modified', diffs, row: rowN1, impact: diffs.length });
-                        counts.Modified++;
+                    if(diffs.length) {
+                        results.push({ id, status: 'Modified', diffs, diffCount: diffs.length, old: oldR, new: newR });
+                        m++;
                     } else {
-                        results.push({ id, status: 'Untouched', diffs: [], row: rowN1, impact: 0 });
-                        counts.Untouched++;
+                        results.push({ id, status: 'Untouched', diffs: [], diffCount: 0, old: oldR, new: newR });
                     }
                 } else {
-                    // Logic: If missing from N+1 Available, is it in Limbo?
-                    if (limN1.has(id)) {
-                        results.push({ id, status: 'Deleted', diffs: [{ col: 'Logic', old: 'Available', new: 'Limbo' }], impact: 1 });
-                        counts.Deleted++;
-                    } else {
-                        results.push({ id, status: 'Anomaly', diffs: [{ col: 'Logic', old: 'Available', new: 'Missing' }], impact: 5 });
-                        counts.Anomalies++;
-                    }
+                    results.push({ id, status: 'Deleted', diffs: [], diffCount: 0, old: oldR, new: null });
+                    d++;
                 }
             });
 
-            // 2. Additions
-            mapN1.forEach((row, id) => {
-                if (!mapN.has(id)) {
-                    const fromLimbo = limN.has(id);
-                    results.push({ id, status: fromLimbo ? 'Reactivated' : 'Added', diffs: [{ col: 'Logic', old: fromLimbo ? 'Limbo' : 'N/A', new: 'Available' }], row, impact: 2 });
-                    counts.Added++;
+            mapN1.forEach((r, id) => {
+                if(!mapN.has(id)) {
+                    results.push({ id, status: 'Added', diffs: [], diffCount: 0, old: null, new: r });
+                    a++;
                 }
             });
 
             STATE.results = results;
-            updateUI(counts);
+            document.getElementById('s-mod').innerText = m;
+            document.getElementById('s-add').innerText = a;
+            document.getElementById('s-del').innerText = d;
+            document.getElementById('s-cols').innerText = cCount;
+            document.getElementById('s-impact').innerText = (m / results.length > 0.5) ? 'CRITICAL' : (m / results.length > 0.2 ? 'MEDIUM' : 'LOW');
+            
+            document.getElementById('stats-row').classList.remove('hidden');
+            document.getElementById('data-container').classList.remove('hidden');
+            document.getElementById('empty-state').classList.add('hidden');
+            
             renderTable(results);
-            renderAnomalies(results.filter(r => r.status === 'Anomaly'));
-            initChart();
-        }
-
-        function updateUI(c) {
-            document.getElementById('dashboard-results').classList.remove('hidden');
-            document.getElementById('stat-modified').innerText = c.Modified;
-            document.getElementById('stat-added').innerText = c.Added;
-            document.getElementById('stat-deleted').innerText = c.Deleted;
-            document.getElementById('stat-cols').innerText = c.TotalCols;
+            showToast('Catalog Intelligence Mapping Complete');
         }
 
         function renderTable(data) {
-            const body = document.getElementById('results-body');
-            if (!data.length) {
-                body.innerHTML = '<tr><td colspan="5" class="p-20 text-center opacity-30 italic">No matches found...</td></tr>';
-                return;
-            }
-
-            body.innerHTML = data.map(r => `
-                <tr class="group hover:bg-slate-50 transition-all">
-                    <td class="p-6 font-bold text-slate-900">${r.id}</td>
-                    <td class="p-6">
-                        <span class="px-3 py-1 rounded-full status-pill ${getStatusClass(r.status)}">${r.status}</span>
+            document.getElementById('item-count').innerText = data.length;
+            document.getElementById('tbody').innerHTML = data.map(r => `
+                <tr class="hover:bg-white/5 transition-colors group">
+                    <td class="p-4 font-bold text-slate-300">#${r.id}</td>
+                    <td class="p-4">
+                        <span class="status-pill ${r.status === 'Modified' ? 'bg-amber-500/10 text-amber-500' : (r.status === 'Added' ? 'bg-emerald-500/10 text-emerald-500' : (r.status === 'Deleted' ? 'bg-rose-500/10 text-rose-500' : 'bg-slate-800 text-slate-500'))}">
+                            ${r.status}
+                        </span>
                     </td>
-                    <td class="p-6">
-                        <div class="w-24 h-2 bg-slate-100 rounded-full overflow-hidden">
-                            <div class="h-full bg-blue-500" style="width: ${Math.min(r.impact * 20, 100)}%"></div>
+                    <td class="p-4">
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold text-slate-200">${r.diffCount} columns</span>
+                            <div class="flex gap-1">
+                                ${r.diffs.slice(0,3).map(d => `<span class="px-1.5 py-0.5 rounded bg-slate-800 text-[9px] text-slate-500 border border-white/5">${d.k}</span>`).join('')}
+                                ${r.diffCount > 3 ? `<span class="text-[9px] text-slate-600">+${r.diffCount-3} more</span>` : ''}
+                            </div>
                         </div>
                     </td>
-                    <td class="p-6 text-xs text-slate-500 max-w-xs truncate">
-                        ${r.diffs.length ? r.diffs.map(d => `<span class="font-bold">${d.col}</span>: <span class="diff-removed">${d.old}</span> → <span class="diff-added">${d.new}</span>`).join(' | ') : '<span class="opacity-20">Perfect Match</span>'}
-                    </td>
-                    <td class="p-6 text-right">
-                        <button onclick="inspectItem('${r.id}')" class="text-blue-600 font-bold text-[10px] uppercase tracking-widest hover:underline">Deep Inspect</button>
+                    <td class="p-4 text-right">
+                        <button onclick="inspect('${r.id}')" class="px-4 py-1.5 rounded-lg bg-blue-600/10 text-blue-400 font-bold hover:bg-blue-600 hover:text-white transition-all">Inspect</button>
                     </td>
                 </tr>
             `).join('');
         }
 
-        function getStatusClass(s) {
-            if (s === 'Modified') return 'bg-amber-100 text-amber-700';
-            if (s === 'Added' || s === 'Reactivated') return 'bg-blue-100 text-blue-700';
-            if (s === 'Deleted') return 'bg-rose-100 text-rose-700';
-            if (s === 'Anomaly') return 'bg-red-600 text-white animate-pulse';
-            return 'bg-slate-100 text-slate-400';
-        }
-
-        function switchView(v) {
-            document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
-            document.getElementById(`view-${v}`).classList.remove('hidden');
-            document.querySelectorAll('nav button').forEach(b => b.classList.remove('sidebar-active'));
-            document.getElementById(`btn-${v}`).classList.add('sidebar-active');
-            
-            const titles = { compare: 'Catalog Delta Analyzer', history: 'Market Trend Engine', anomalies: 'Anomaly Detection Unit', export: 'Master Export HQ' };
-            document.getElementById('view-title').innerText = titles[v];
-            STATE.activeView = v;
-        }
-
-        function inspectItem(id) {
+        function inspect(id) {
             const item = STATE.results.find(r => r.id === id);
-            if (!item) return;
-            
-            document.getElementById('modal-title').innerText = `Item: ${id}`;
-            document.getElementById('modal-content').innerHTML = `
-                <div class="grid grid-cols-2 gap-10">
-                    <div class="bg-slate-50 p-6 rounded-3xl border border-slate-100">
-                        <h4 class="text-xs font-black uppercase text-slate-400 mb-4 tracking-widest">Diff Report</h4>
-                        <div class="space-y-4">
-                            ${item.diffs.length ? item.diffs.map(d => `
-                                <div>
-                                    <p class="text-[10px] font-bold text-slate-500 uppercase">${d.col}</p>
-                                    <div class="flex items-center gap-2 mt-1">
-                                        <span class="diff-removed px-2 py-0.5 rounded text-xs">${d.old}</span>
-                                        <svg class="w-3 h-3 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-                                        <span class="diff-added px-2 py-0.5 rounded text-xs font-bold">${d.new}</span>
-                                    </div>
-                                </div>
-                            `).join('') : '<p class="text-xs text-slate-400 italic">No business modifications found.</p>'}
-                        </div>
+            if(!item) return;
+            document.getElementById('modal-title').innerText = `Catalog Insight: ${id}`;
+            document.getElementById('modal-body').innerHTML = `
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div class="p-4 bg-slate-900 rounded-2xl border border-white/5">
+                        <p class="text-[10px] uppercase font-bold text-slate-500 mb-2">Current Status</p>
+                        <p class="text-lg font-bold">${item.status}</p>
                     </div>
-                    <div class="bg-blue-50/30 p-6 rounded-3xl border border-blue-100">
-                        <h4 class="text-xs font-black uppercase text-blue-400 mb-4 tracking-widest">Active Metadata</h4>
-                        <div class="space-y-2">
-                            ${Object.entries(item.row || {}).map(([k,v]) => `
-                                <div class="flex justify-between text-xs border-b border-blue-100/50 pb-1">
-                                    <span class="font-bold text-slate-500">${k}</span>
-                                    <span class="text-slate-900">${v}</span>
-                                </div>
-                            `).join('')}
-                        </div>
+                    <div class="p-4 bg-slate-900 rounded-2xl border border-white/5">
+                        <p class="text-[10px] uppercase font-bold text-slate-500 mb-2">Complexity</p>
+                        <p class="text-lg font-bold">${item.diffCount} Diffs</p>
                     </div>
                 </div>
+                <div class="space-y-3">
+                    <h4 class="text-xs font-bold uppercase text-slate-400 tracking-widest">Structural Changes</h4>
+                    ${item.diffs.length ? item.diffs.map(d => `
+                        <div class="p-3 bg-slate-800/40 rounded-xl border border-white/5 flex items-center justify-between">
+                            <span class="font-medium text-slate-300">${d.k}</span>
+                            <div class="flex items-center gap-3 text-[11px]">
+                                <span class="text-rose-400 line-through">${d.o}</span>
+                                <i data-lucide="arrow-right" class="w-3 h-3 text-slate-600"></i>
+                                <span class="text-emerald-400 font-bold">${d.n}</span>
+                            </div>
+                        </div>
+                    `).join('') : '<p class="text-xs text-slate-500 italic">No modifications found in existing attributes.</p>'}
+                </div>
             `;
-            document.getElementById('modal-details').classList.remove('hidden');
+            lucide.createIcons();
+            document.getElementById('modal').classList.remove('hidden');
         }
 
-        function closeModal() { document.getElementById('modal-details').classList.add('hidden'); }
+        function closeModal() { document.getElementById('modal').classList.add('hidden'); }
 
-        function handleSearch(q) {
+        function renderCharts() {
+            const counts = { Modified: 0, Added: 0, Deleted: 0, Untouched: 0 };
+            const colCounts = {};
+            STATE.results.forEach(r => {
+                counts[r.status]++;
+                r.diffs.forEach(d => colCounts[d.k] = (colCounts[d.k] || 0) + 1);
+            });
+
+            if(STATE.charts.status) STATE.charts.status.destroy();
+            if(STATE.charts.cols) STATE.charts.cols.destroy();
+
+            STATE.charts.status = new Chart(document.getElementById('statusChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(counts),
+                    datasets: [{
+                        data: Object.values(counts),
+                        backgroundColor: ['#f59e0b', '#10b981', '#ef4444', '#334155'],
+                        borderWidth: 0,
+                        hoverOffset: 10
+                    }]
+                },
+                options: { plugins: { legend: { display: false } }, cutout: '70%' }
+            });
+
+            const sortedCols = Object.entries(colCounts).sort((a,b) => b[1] - a[1]).slice(0, 8);
+            STATE.charts.cols = new Chart(document.getElementById('colChart'), {
+                type: 'bar',
+                data: {
+                    labels: sortedCols.map(x => x[0]),
+                    datasets: [{
+                        label: 'Impact Frequency',
+                        data: sortedCols.map(x => x[1]),
+                        backgroundColor: '#2563eb',
+                        borderRadius: 8
+                    }]
+                },
+                options: { 
+                    plugins: { legend: { display: false } },
+                    scales: { 
+                        y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#64748b' } },
+                        x: { grid: { display: false }, ticks: { color: '#64748b' } }
+                    }
+                }
+            });
+        }
+
+        function renderAnomalies() {
+            const list = document.getElementById('anomalies-list');
+            const anomalies = [];
+            
+            // Heuristic: Price outliers or bulk changes
+            STATE.results.forEach(r => {
+                if(r.status === 'Modified') {
+                    r.diffs.forEach(d => {
+                        if(d.k.toLowerCase().includes('price') || d.k.toLowerCase().includes('cost')) {
+                            const ov = parseFloat(d.o), nv = parseFloat(d.n);
+                            if(!isNaN(ov) && !isNaN(nv)) {
+                                const p = Math.abs((nv-ov)/ov);
+                                if(p > 0.5) anomalies.push({ id: r.id, type: 'Significant Price Shift', details: `${Math.round(p*100)}% change in ${d.k}`, severity: 'high' });
+                            }
+                        }
+                    });
+                    if(r.diffCount > 10) anomalies.push({ id: r.id, type: 'Schema Volatility', details: `Bulk update: ${r.diffCount} attributes changed`, severity: 'med' });
+                }
+                if(r.status === 'Deleted') anomalies.push({ id: r.id, type: 'Asset Deprecation', details: 'Item removed from target catalog', severity: 'low' });
+            });
+
+            if(!anomalies.length) {
+                list.innerHTML = `<div class="p-10 text-center glass rounded-3xl opacity-50">No critical anomalies detected. Catalog integrity is high.</div>`;
+                return;
+            }
+
+            list.innerHTML = anomalies.map(a => `
+                <div class="glass p-6 rounded-2xl flex items-center justify-between border-l-4 ${a.severity === 'high' ? 'border-l-rose-500' : (a.severity === 'med' ? 'border-l-amber-500' : 'border-l-blue-500')}">
+                    <div class="flex items-center gap-4">
+                        <div class="p-3 bg-slate-900 rounded-xl">
+                            <i data-lucide="alert-circle" class="${a.severity === 'high' ? 'text-rose-500' : (a.severity === 'med' ? 'text-amber-500' : 'text-blue-500')} w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-slate-500 uppercase">${a.type}</p>
+                            <h4 class="font-bold text-slate-200">#${a.id}</h4>
+                            <p class="text-xs text-slate-400 mt-1">${a.details}</p>
+                        </div>
+                    </div>
+                    <button onclick="inspect('${a.id}')" class="px-6 py-2 bg-slate-800 hover:bg-slate-700 rounded-xl text-xs font-bold transition-all">Resolve</button>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function doSearch(q) {
             const filtered = STATE.results.filter(r => r.id.toLowerCase().includes(q.toLowerCase()));
             renderTable(filtered);
         }
 
-        function filterTable(status) {
-            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active', 'bg-white', 'shadow-sm'));
-            event.target.classList.add('active', 'bg-white', 'shadow-sm');
-            
-            const filtered = status === 'all' ? STATE.results : STATE.results.filter(r => r.status === status);
-            renderTable(filtered);
+        function sortData(mode) {
+            if(mode === 'id') STATE.results.sort((a,b) => a.id.localeCompare(b.id));
+            if(mode === 'diffCount') STATE.results.sort((a,b) => b.diffCount - a.diffCount);
+            renderTable(STATE.results);
         }
 
-        function exportCSV(mode = 'all') {
-            const data = mode === 'all' ? STATE.results : STATE.results.filter(r => r.status === mode);
-            let csv = "ID,Status,Modifications
-";
-            data.forEach(r => {
-                const mods = r.diffs.map(d => `${d.col}: ${d.old}->${d.new}`).join(' | ');
-                csv += `${r.id},${r.status},"${mods}"
-`;
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            document.getElementById('toast-msg').innerText = msg;
+            t.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => t.classList.add('translate-y-20', 'opacity-0'), 3000);
+        }
+
+        function doExport() {
+            if(!STATE.results.length) return alert('Perform analysis first');
+            let csv = "ID,Status,DiffCount,Changes\n";
+            STATE.results.forEach(r => {
+                const changes = r.diffs.map(d => `${d.k}:[${d.o}->${d.n}]`).join(' | ');
+                csv += `"${r.id}","${r.status}",${r.diffCount},"${changes}"\n`;
             });
             const blob = new Blob([csv], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
+            const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
-            a.setAttribute('hidden', '');
-            a.setAttribute('href', url);
-            a.setAttribute('download', `Edvance_Delta_${new Date().toLocaleDateString()}.csv`);
-            document.body.appendChild(a);
+            a.href = url;
+            a.download = `Edvance_Intelligence_Report_${new Date().toISOString().slice(0,10)}.csv`;
             a.click();
-            document.body.removeChild(a);
-        }
-
-        function renderAnomalies(anoms) {
-            const list = document.getElementById('anomalies-list');
-            if (!anoms.length) {
-                list.innerHTML = '<div class="col-span-3 text-center py-10 opacity-20">No data loss anomalies detected.</div>';
-                return;
-            }
-            list.innerHTML = anoms.map(a => `
-                <div class="bg-white p-6 rounded-[2rem] border-2 border-rose-100 shadow-sm shadow-rose-100/50">
-                    <p class="text-[10px] font-black text-rose-500 uppercase tracking-widest mb-2">Orphaned Item</p>
-                    <h5 class="text-lg font-bold text-slate-900">${a.id}</h5>
-                    <p class="text-xs text-slate-400 mt-2">Exists in N, but missing from N+1 Available/Limbo.</p>
-                </div>
-            `).join('');
-        }
-
-        function initChart() {
-            const ctx = document.getElementById('historyChart').getContext('2d');
-            if (STATE.historyChart) STATE.historyChart.destroy();
-            STATE.historyChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                    datasets: [{
-                        label: 'Catalog Modifications',
-                        data: [12, 19, 3, 5, 2, 3],
-                        borderColor: '#2563eb',
-                        tension: 0.4,
-                        fill: true,
-                        backgroundColor: 'rgba(37, 99, 235, 0.05)'
-                    }]
-                },
-                options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
-            });
         }
     </script>
 </body>
